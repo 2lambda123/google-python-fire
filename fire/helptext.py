@@ -45,14 +45,12 @@ SUBSECTION_INDENTATION = 4
 def HelpText(component, trace=None, verbose=False):
     """Gets the help string for the current component, suitable for a help screen.
 
-    Args:
-      component: The component to construct the help string for.
-      trace: The Fire trace of the command so far. The command executed so far
-        can be extracted from this trace.
-      verbose: Whether to include private members in the help screen.
+    :param component: The component to construct the help string for.
+    :param trace: The Fire trace of the command so far. The command executed so far
+        can be extracted from this trace. (Default value = None)
+    :param verbose: Whether to include private members in the help screen. (Default value = False)
+    :returns: The full help screen as a string.
 
-    Returns:
-      The full help screen as a string.
     """
     # Preprocessing needed to create the sections:
     info = inspectutils.Info(component)
@@ -89,7 +87,14 @@ def HelpText(component, trace=None, verbose=False):
 
 
 def _NameSection(component, info, trace=None, verbose=False):
-    """The "Name" section of the help string."""
+    """The "Name" section of the help string.
+
+    :param component: 
+    :param info: 
+    :param trace:  (Default value = None)
+    :param verbose:  (Default value = False)
+
+    """
 
     # Only include separators in the name in verbose mode.
     current_command = _GetCurrentCommand(trace, include_separators=verbose)
@@ -112,7 +117,15 @@ def _NameSection(component, info, trace=None, verbose=False):
 
 
 def _SynopsisSection(component, actions_grouped_by_kind, spec, metadata, trace=None):
-    """The "Synopsis" section of the help string."""
+    """The "Synopsis" section of the help string.
+
+    :param component: 
+    :param actions_grouped_by_kind: 
+    :param spec: 
+    :param metadata: 
+    :param trace:  (Default value = None)
+
+    """
     current_command = _GetCurrentCommand(trace=trace, include_separators=True)
 
     possible_actions = _GetPossibleActions(actions_grouped_by_kind)
@@ -141,13 +154,11 @@ def _SynopsisSection(component, actions_grouped_by_kind, spec, metadata, trace=N
 def _DescriptionSection(component, info):
     """The "Description" sections of the help string.
 
-    Args:
-      component: The component to produce the description section for.
-      info: The info dict for the component of interest.
-
-    Returns:
-      Returns the description if available. If not, returns the summary.
+    :param component: The component to produce the description section for.
+    :param info: The info dict for the component of interest.
+    :returns: Returns the description if available. If not, returns the summary.
       If neither are available, returns None.
+
     """
     if custom_descriptions.NeedsCustomDescription(component):
         available_space = LINE_LENGTH - SECTION_INDENTATION
@@ -169,13 +180,26 @@ def _DescriptionSection(component, info):
 
 
 def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec):
+    """
+
+    :param flag: 
+    :param docstring_info: 
+    :param spec: 
+
+    """
     return _CreateFlagItem(
         flag, docstring_info, spec, required=flag not in spec.kwonlydefaults
     )
 
 
 def _ArgsAndFlagsSections(info, spec, metadata):
-    """The "Args and Flags" sections of the help string."""
+    """The "Args and Flags" sections of the help string.
+
+    :param info: 
+    :param spec: 
+    :param metadata: 
+
+    """
     args_with_no_defaults = spec.args[: len(spec.args) - len(spec.defaults)]
     args_with_defaults = spec.args[len(spec.args) - len(spec.defaults) :]
 
@@ -252,7 +276,12 @@ def _ArgsAndFlagsSections(info, spec, metadata):
 
 
 def _UsageDetailsSections(component, actions_grouped_by_kind):
-    """The usage details sections of the help string."""
+    """The usage details sections of the help string.
+
+    :param component: 
+    :param actions_grouped_by_kind: 
+
+    """
     groups, commands, values, indexes = actions_grouped_by_kind
 
     sections = []
@@ -269,33 +298,41 @@ def _UsageDetailsSections(component, actions_grouped_by_kind):
 
 
 def _GetSummary(info):
+    """
+
+    :param info: 
+
+    """
     docstring_info = info["docstring_info"]
     return docstring_info.summary if docstring_info.summary else None
 
 
 def _GetDescription(info):
+    """
+
+    :param info: 
+
+    """
     docstring_info = info["docstring_info"]
     return docstring_info.description if docstring_info.description else None
 
 
 def _GetArgsAndFlagsString(spec, metadata):
     """The args and flags string for showing how to call a function.
-
+    
     If positional arguments are accepted, the args will be shown as positional.
     E.g. "ARG1 ARG2 [--flag=FLAG]"
-
+    
     If positional arguments are disallowed, the args will be shown with flags
     syntax.
     E.g. "--arg1=ARG1 [--flag=FLAG]"
 
-    Args:
-      spec: The full arg spec for the component to construct the args and flags
+    :param spec: The full arg spec for the component to construct the args and flags
         string for.
-      metadata: Metadata for the component, including whether it accepts
+    :param metadata: Metadata for the component, including whether it accepts
         positional arguments.
+    :returns: The constructed args and flags string.
 
-    Returns:
-      The constructed args and flags string.
     """
     args_with_no_defaults = spec.args[: len(spec.args) - len(spec.defaults)]
     args_with_defaults = spec.args[len(spec.args) - len(spec.defaults) :]
@@ -332,7 +369,11 @@ def _GetArgsAndFlagsString(spec, metadata):
 
 
 def _GetPossibleActions(actions_grouped_by_kind):
-    """The list of possible action kinds."""
+    """The list of possible action kinds.
+
+    :param actions_grouped_by_kind: 
+
+    """
     possible_actions = []
     for action_group in actions_grouped_by_kind:
         if action_group.members:
@@ -341,14 +382,23 @@ def _GetPossibleActions(actions_grouped_by_kind):
 
 
 def _GetPossibleActionsString(possible_actions):
-    """A help screen string listing the possible action kinds available."""
+    """A help screen string listing the possible action kinds available.
+
+    :param possible_actions: 
+
+    """
     return " | ".join(
         formatting.Underline(action.upper()) for action in possible_actions
     )
 
 
 def _GetActionsGroupedByKind(component, verbose=False):
-    """Gets lists of available actions, grouped by action kind."""
+    """Gets lists of available actions, grouped by action kind.
+
+    :param component: 
+    :param verbose:  (Default value = False)
+
+    """
     groups = ActionGroup(name="group", plural="groups")
     commands = ActionGroup(name="command", plural="commands")
     values = ActionGroup(name="value", plural="values")
@@ -375,7 +425,12 @@ def _GetActionsGroupedByKind(component, verbose=False):
 
 
 def _GetCurrentCommand(trace=None, include_separators=True):
-    """Returns current command for the purpose of generating help text."""
+    """Returns current command for the purpose of generating help text.
+
+    :param trace:  (Default value = None)
+    :param include_separators:  (Default value = True)
+
+    """
     if trace:
         current_command = trace.GetCommand(include_separators=include_separators)
     else:
@@ -384,8 +439,11 @@ def _GetCurrentCommand(trace=None, include_separators=True):
 
 
 def _CreateOutputSection(name, content):
-    return """{name}
-{content}""".format(
+    """
+
+    :param name: 
+    :param content: 
+    :returns: {content}""".format(
         name=formatting.Bold(name),
         content=formatting.Indent(content, SECTION_INDENTATION),
     )
@@ -394,15 +452,13 @@ def _CreateOutputSection(name, content):
 def _CreateArgItem(arg, docstring_info, spec):
     """Returns a string describing a positional argument.
 
-    Args:
-      arg: The name of the positional argument.
-      docstring_info: A docstrings.DocstringInfo namedtuple with information about
+    :param arg: The name of the positional argument.
+    :param docstring_info: A docstrings.DocstringInfo namedtuple with information about
         the containing function's docstring.
-      spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+    :param spec: An instance of fire.inspectutils.FullArgSpec, containing type and
        default information about the arguments to a callable.
+    :returns: A string to be used in constructing the help screen for the function.
 
-    Returns:
-      A string to be used in constructing the help screen for the function.
     """
 
     # The help string is indented, so calculate the maximum permitted length
@@ -426,17 +482,15 @@ def _CreateArgItem(arg, docstring_info, spec):
 def _CreateFlagItem(flag, docstring_info, spec, required=False, flag_string=None):
     """Returns a string describing a flag using docstring and FullArgSpec info.
 
-    Args:
-      flag: The name of the flag.
-      docstring_info: A docstrings.DocstringInfo namedtuple with information about
+    :param flag: The name of the flag.
+    :param docstring_info: A docstrings.DocstringInfo namedtuple with information about
         the containing function's docstring.
-      spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+    :param spec: An instance of fire.inspectutils.FullArgSpec, containing type and
        default information about the arguments to a callable.
-      required: Whether the flag is required.
-      flag_string: If provided, use this string for the flag, rather than
-        constructing one from the flag name.
-    Returns:
-      A string to be used in constructing the help screen for the function.
+    :param required: Whether the flag is required. (Default value = False)
+    :param flag_string: If provided, use this string for the flag, rather than (Default value = None)
+    :returns: A string to be used in constructing the help screen for the function.
+
     """
     # pylint: disable=g-bad-todo
     # TODO(MichaelCG8): Get type and default information from docstrings if it is
@@ -485,13 +539,11 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False, flag_string=None
 def _GetArgType(arg, spec):
     """Returns a string describing the type of an argument.
 
-    Args:
-      arg: The name of the argument.
-      spec: An instance of fire.inspectutils.FullArgSpec, containing type and
-       default information about the arguments to a callable.
-    Returns:
-      A string to be used in constructing the help screen for the function, the
+    :param arg: The name of the argument.
+    :param spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+    :returns: A string to be used in constructing the help screen for the function, the
       empty string if the argument type is not available.
+
     """
     if arg in spec.annotations:
         arg_type = spec.annotations[arg]
@@ -510,14 +562,12 @@ def _GetArgType(arg, spec):
 def _GetArgDefault(flag, spec):
     """Returns a string describing a flag's default value.
 
-    Args:
-      flag: The name of the flag.
-      spec: An instance of fire.inspectutils.FullArgSpec, containing type and
-       default information about the arguments to a callable.
-    Returns:
-      A string to be used in constructing the help screen for the function, the
+    :param flag: The name of the flag.
+    :param spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+    :returns: A string to be used in constructing the help screen for the function, the
       empty string if the flag does not have a default or the default is not
       available.
+
     """
     num_defaults = len(spec.defaults)
     args_with_defaults = spec.args[-num_defaults:]
@@ -531,6 +581,13 @@ def _GetArgDefault(flag, spec):
 
 
 def _CreateItem(name, description, indent=2):
+    """
+
+    :param name: 
+    :param description: 
+    :param indent:  (Default value = 2)
+
+    """
     if not description:
         return name
     return """{name}
@@ -540,6 +597,12 @@ def _CreateItem(name, description, indent=2):
 
 
 def _GetArgDescription(name, docstring_info):
+    """
+
+    :param name: 
+    :param docstring_info: 
+
+    """
     if docstring_info.args:
         for arg_in_docstring in docstring_info.args:
             if arg_in_docstring.name in (name, "*" + name, "**" + name):
@@ -548,7 +611,11 @@ def _GetArgDescription(name, docstring_info):
 
 
 def _MakeUsageDetailsSection(action_group):
-    """Creates a usage details section for the provided action group."""
+    """Creates a usage details section for the provided action group.
+
+    :param action_group: 
+
+    """
     item_strings = []
     for name, member in action_group.GetItems():
         info = inspectutils.Info(member)
@@ -571,7 +638,12 @@ def _MakeUsageDetailsSection(action_group):
 
 
 def _ValuesUsageDetailsSection(component, values):
-    """Creates a section tuple for the values section of the usage details."""
+    """Creates a section tuple for the values section of the usage details.
+
+    :param component: 
+    :param values: 
+
+    """
     value_item_strings = []
     for value_name, value in values.GetItems():
         del value
@@ -590,6 +662,12 @@ def _ValuesUsageDetailsSection(component, values):
 
 
 def _NewChoicesSection(name, choices):
+    """
+
+    :param name: 
+    :param choices: 
+
+    """
     return _CreateItem(
         "{name} is one of the following:".format(
             name=formatting.Bold(formatting.Underline(name))
@@ -602,13 +680,11 @@ def _NewChoicesSection(name, choices):
 def UsageText(component, trace=None, verbose=False):
     """Returns usage text for the given component.
 
-    Args:
-      component: The component to determine the usage text for.
-      trace: The Fire trace object containing all metadata of current execution.
-      verbose: Whether to display the usage text in verbose mode.
+    :param component: The component to determine the usage text for.
+    :param trace: The Fire trace object containing all metadata of current execution. (Default value = None)
+    :param verbose: Whether to display the usage text in verbose mode. (Default value = False)
+    :returns: String suitable for display in an error screen.
 
-    Returns:
-      String suitable for display in an error screen.
     """
     output_template = """Usage: {continued_command}
 {availability_lines}
@@ -664,12 +740,22 @@ For detailed information on this command, run:
 
 
 def _GetPossibleActionsUsageString(possible_actions):
+    """
+
+    :param possible_actions: 
+
+    """
     if possible_actions:
         return "<{actions}>".format(actions="|".join(possible_actions))
     return None
 
 
 def _UsageAvailabilityLines(actions_grouped_by_kind):
+    """
+
+    :param actions_grouped_by_kind: 
+
+    """
     availability_lines = []
     for action_group in actions_grouped_by_kind:
         if action_group.members:
@@ -682,7 +768,12 @@ def _UsageAvailabilityLines(actions_grouped_by_kind):
 
 
 def _GetCallableUsageItems(spec, metadata):
-    """A list of elements that comprise the usage summary for a callable."""
+    """A list of elements that comprise the usage summary for a callable.
+
+    :param spec: 
+    :param metadata: 
+
+    """
     args_with_no_defaults = spec.args[: len(spec.args) - len(spec.defaults)]
     args_with_defaults = spec.args[len(spec.args) - len(spec.defaults) :]
 
@@ -708,13 +799,23 @@ def _GetCallableUsageItems(spec, metadata):
 
 
 def _KeywordOnlyArguments(spec, required=True):
+    """
+
+    :param spec: 
+    :param required:  (Default value = True)
+
+    """
     return (
         flag for flag in spec.kwonlyargs if required != (flag in spec.kwonlydefaults)
     )
 
 
 def _GetCallableAvailabilityLines(spec):
-    """The list of availability lines for a callable for use in a usage string."""
+    """The list of availability lines for a callable for use in a usage string.
+
+    :param spec: 
+
+    """
     args_with_defaults = spec.args[len(spec.args) - len(spec.defaults) :]
 
     # TODO(dbieber): Handle args_with_no_defaults if not accepts_positional_args.
@@ -757,6 +858,15 @@ def _GetCallableAvailabilityLines(spec):
 def _CreateAvailabilityLine(
     header, items, header_indent=2, items_indent=25, line_length=LINE_LENGTH
 ):
+    """
+
+    :param header: 
+    :param items: 
+    :param header_indent:  (Default value = 2)
+    :param items_indent:  (Default value = 25)
+    :param line_length:  (Default value = LINE_LENGTH)
+
+    """
     items_width = line_length - items_indent
     items_text = "\n".join(formatting.WrappedJoin(items, width=items_width))
     indented_items_text = formatting.Indent(items_text, spaces=items_indent)
@@ -774,8 +884,15 @@ class ActionGroup(object):
         self.members = []
 
     def Add(self, name, member=None):
+        """
+
+        :param name: 
+        :param member:  (Default value = None)
+
+        """
         self.names.append(name)
         self.members.append(member)
 
     def GetItems(self):
+        """ """
         return zip(self.names, self.members)
