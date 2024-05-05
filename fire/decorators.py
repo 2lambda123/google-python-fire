@@ -39,7 +39,7 @@ def SetParseFn(fn, *arguments):
     def _Decorator(func):
         """
 
-        :param func: 
+        :param func:
 
         """
         parse_fns = GetParseFns(func)
@@ -56,16 +56,16 @@ def SetParseFn(fn, *arguments):
 
 def SetParseFns(*positional, **named):
     """Set the fns for Fire to use to parse args when calling the decorated fn.
-    
+
     Returns a decorator, which when applied to a function adds metadata to the
     function telling Fire how to turn string command line arguments into proper
     Python arguments with which to call the function.
-    
+
     A parse function should accept a single string argument and return a value to
     be used in its place when calling the decorated function.
 
     :param *positional: The functions to be used for parsing positional arguments.
-    :param **named: 
+    :param **named:
     :returns: The decorated function, which now has metadata telling Fire how to perform.
 
     """
@@ -73,7 +73,7 @@ def SetParseFns(*positional, **named):
     def _Decorator(fn):
         """
 
-        :param fn: 
+        :param fn:
 
         """
         parse_fns = GetParseFns(fn)
@@ -88,9 +88,9 @@ def SetParseFns(*positional, **named):
 def _SetMetadata(fn, attribute, value):
     """
 
-    :param fn: 
-    :param attribute: 
-    :param value: 
+    :param fn:
+    :param attribute:
+    :param value:
 
     """
     metadata = GetMetadata(fn)
@@ -101,7 +101,7 @@ def _SetMetadata(fn, attribute, value):
 def GetMetadata(fn):
     """
 
-    :param fn: 
+    :param fn:
 
     """
     # type: (...) -> dict
@@ -130,7 +130,7 @@ def GetMetadata(fn):
 def GetParseFns(fn):
     """
 
-    :param fn: 
+    :param fn:
 
     """
     # type: (...) -> dict
