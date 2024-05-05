@@ -24,9 +24,9 @@ from __future__ import print_function
 
 import inspect
 
-FIRE_METADATA = 'FIRE_METADATA'
-FIRE_PARSE_FNS = 'FIRE_PARSE_FNS'
-ACCEPTS_POSITIONAL_ARGS = 'ACCEPTS_POSITIONAL_ARGS'
+FIRE_METADATA = "FIRE_METADATA"
+FIRE_PARSE_FNS = "FIRE_PARSE_FNS"
+ACCEPTS_POSITIONAL_ARGS = "ACCEPTS_POSITIONAL_ARGS"
 
 
 def SetParseFn(fn, *arguments):
@@ -39,13 +39,14 @@ def SetParseFn(fn, *arguments):
     Returns:
       The decorated function, which now has metadata telling Fire how to perform.
     """
+
     def _Decorator(func):
         parse_fns = GetParseFns(func)
         if not arguments:
-            parse_fns['default'] = fn
+            parse_fns["default"] = fn
         else:
             for argument in arguments:
-                parse_fns['named'][argument] = fn
+                parse_fns["named"][argument] = fn
         _SetMetadata(func, FIRE_PARSE_FNS, parse_fns)
         return func
 
@@ -68,10 +69,11 @@ def SetParseFns(*positional, **named):
     Returns:
       The decorated function, which now has metadata telling Fire how to perform.
     """
+
     def _Decorator(fn):
         parse_fns = GetParseFns(fn)
-        parse_fns['positional'] = positional
-        parse_fns['named'].update(named)  # pytype: disable=attribute-error
+        parse_fns["positional"] = positional
+        parse_fns["named"].update(named)  # pytype: disable=attribute-error
         _SetMetadata(fn, FIRE_PARSE_FNS, parse_fns)
         return fn
 
