@@ -40,9 +40,9 @@ class HelpTest(testutils.BaseTestCase):
     def testHelpTextNoDefaults(self):
         """ """
         component = tc.NoDefaults
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="NoDefaults")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(
+                                            component, name="NoDefaults"))
         self.assertIn("NAME\n    NoDefaults", help_screen)
         self.assertIn("SYNOPSIS\n    NoDefaults", help_screen)
         self.assertNotIn("DESCRIPTION", help_screen)
@@ -51,13 +51,14 @@ class HelpTest(testutils.BaseTestCase):
     def testHelpTextNoDefaultsObject(self):
         """ """
         component = tc.NoDefaults()
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="NoDefaults")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(
+                                            component, name="NoDefaults"))
         self.assertIn("NAME\n    NoDefaults", help_screen)
         self.assertIn("SYNOPSIS\n    NoDefaults COMMAND", help_screen)
         self.assertNotIn("DESCRIPTION", help_screen)
-        self.assertIn("COMMANDS\n    COMMAND is one of the following:", help_screen)
+        self.assertIn("COMMANDS\n    COMMAND is one of the following:",
+                      help_screen)
         self.assertIn("double", help_screen)
         self.assertIn("triple", help_screen)
         self.assertNotIn("NOTES", help_screen)
@@ -65,9 +66,9 @@ class HelpTest(testutils.BaseTestCase):
     def testHelpTextFunction(self):
         """ """
         component = tc.NoDefaults().double
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="double")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(component,
+                                                              name="double"))
         self.assertIn("NAME\n    double", help_screen)
         self.assertIn("SYNOPSIS\n    double COUNT", help_screen)
         self.assertNotIn("DESCRIPTION", help_screen)
@@ -80,21 +81,22 @@ class HelpTest(testutils.BaseTestCase):
     def testHelpTextFunctionWithDefaults(self):
         """ """
         component = tc.WithDefaults().triple
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="triple")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(component,
+                                                              name="triple"))
         self.assertIn("NAME\n    triple", help_screen)
         self.assertIn("SYNOPSIS\n    triple <flags>", help_screen)
         self.assertNotIn("DESCRIPTION", help_screen)
-        self.assertIn("FLAGS\n    --count=COUNT\n        Default: 0", help_screen)
+        self.assertIn("FLAGS\n    --count=COUNT\n        Default: 0",
+                      help_screen)
         self.assertNotIn("NOTES", help_screen)
 
     def testHelpTextFunctionWithLongDefaults(self):
         """ """
         component = tc.WithDefaults().text
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="text")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(component,
+                                                              name="text"))
         self.assertIn("NAME\n    text", help_screen)
         self.assertIn("SYNOPSIS\n    text <flags>", help_screen)
         self.assertNotIn("DESCRIPTION", help_screen)
@@ -109,9 +111,9 @@ class HelpTest(testutils.BaseTestCase):
     def testHelpTextFunctionWithKwargs(self):
         """ """
         component = tc.fn_with_kwarg
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="text")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(component,
+                                                              name="text"))
         self.assertIn("NAME\n    text", help_screen)
         self.assertIn("SYNOPSIS\n    text ARG1 ARG2 <flags>", help_screen)
         self.assertIn("DESCRIPTION\n    Function with kwarg", help_screen)
@@ -124,9 +126,9 @@ class HelpTest(testutils.BaseTestCase):
     def testHelpTextFunctionWithKwargsAndDefaults(self):
         """ """
         component = tc.fn_with_kwarg_and_defaults
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="text")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(component,
+                                                              name="text"))
         self.assertIn("NAME\n    text", help_screen)
         self.assertIn("SYNOPSIS\n    text ARG1 ARG2 <flags>", help_screen)
         self.assertIn("DESCRIPTION\n    Function with kwarg", help_screen)
@@ -138,15 +140,14 @@ class HelpTest(testutils.BaseTestCase):
             help_screen,
         )
 
-    @testutils.skipIf(
-        sys.version_info[0:2] < (3, 5), "Python < 3.5 does not support type hints."
-    )
+    @testutils.skipIf(sys.version_info[0:2] < (3, 5),
+                      "Python < 3.5 does not support type hints.")
     def testHelpTextFunctionWithDefaultsAndTypes(self):
         """ """
         component = tc.py3.WithDefaultsAndTypes().double  # pytype: disable=module-attr
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="double")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(component,
+                                                              name="double"))
         self.assertIn("NAME\n    double", help_screen)
         self.assertIn("SYNOPSIS\n    double <flags>", help_screen)
         self.assertIn("DESCRIPTION", help_screen)
@@ -156,15 +157,14 @@ class HelpTest(testutils.BaseTestCase):
         )
         self.assertNotIn("NOTES", help_screen)
 
-    @testutils.skipIf(
-        sys.version_info[0:2] < (3, 5), "Python < 3.5 does not support type hints."
-    )
+    @testutils.skipIf(sys.version_info[0:2] < (3, 5),
+                      "Python < 3.5 does not support type hints.")
     def testHelpTextFunctionWithTypesAndDefaultNone(self):
         """ """
         component = tc.py3.WithDefaultsAndTypes().get_int  # pytype: disable=module-attr
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="get_int")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(component,
+                                                              name="get_int"))
         self.assertIn("NAME\n    get_int", help_screen)
         self.assertIn("SYNOPSIS\n    get_int <flags>", help_screen)
         self.assertNotIn("DESCRIPTION", help_screen)
@@ -175,35 +175,32 @@ class HelpTest(testutils.BaseTestCase):
         )
         self.assertNotIn("NOTES", help_screen)
 
-    @testutils.skipIf(
-        sys.version_info[0:2] < (3, 5), "Python < 3.5 does not support type hints."
-    )
+    @testutils.skipIf(sys.version_info[0:2] < (3, 5),
+                      "Python < 3.5 does not support type hints.")
     def testHelpTextFunctionWithTypes(self):
         """ """
         component = tc.py3.WithTypes().double  # pytype: disable=module-attr
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="double")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(component,
+                                                              name="double"))
         self.assertIn("NAME\n    double", help_screen)
         self.assertIn("SYNOPSIS\n    double COUNT", help_screen)
         self.assertIn("DESCRIPTION", help_screen)
-        self.assertIn(
-            "POSITIONAL ARGUMENTS\n    COUNT\n        Type: float", help_screen
-        )
+        self.assertIn("POSITIONAL ARGUMENTS\n    COUNT\n        Type: float",
+                      help_screen)
         self.assertIn(
             "NOTES\n    You can also use flags syntax for POSITIONAL ARGUMENTS",
             help_screen,
         )
 
-    @testutils.skipIf(
-        sys.version_info[0:2] < (3, 5), "Python < 3.5 does not support type hints."
-    )
+    @testutils.skipIf(sys.version_info[0:2] < (3, 5),
+                      "Python < 3.5 does not support type hints.")
     def testHelpTextFunctionWithLongTypes(self):
         """ """
         component = tc.py3.WithTypes().long_type  # pytype: disable=module-attr
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, name="long_type")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(
+                                            component, name="long_type"))
         self.assertIn("NAME\n    long_type", help_screen)
         self.assertIn("SYNOPSIS\n    long_type LONG_OBJ", help_screen)
         self.assertNotIn("DESCRIPTION", help_screen)
@@ -222,9 +219,9 @@ class HelpTest(testutils.BaseTestCase):
     def testHelpTextFunctionWithBuiltin(self):
         """ """
         component = "test".upper
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, "upper")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(
+                                            component, "upper"))
         self.assertIn("NAME\n    upper", help_screen)
         self.assertIn("SYNOPSIS\n    upper", help_screen)
         # We don't check description content here since the content is python
@@ -235,9 +232,9 @@ class HelpTest(testutils.BaseTestCase):
     def testHelpTextFunctionIntType(self):
         """ """
         component = int
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, "int")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(
+                                            component, "int"))
         self.assertIn("NAME\n    int", help_screen)
         self.assertIn("SYNOPSIS\n    int", help_screen)
         # We don't check description content here since the content is python
@@ -247,9 +244,9 @@ class HelpTest(testutils.BaseTestCase):
     def testHelpTextEmptyList(self):
         """ """
         component = []
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, "list")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(
+                                            component, "list"))
         self.assertIn("NAME\n    list", help_screen)
         self.assertIn("SYNOPSIS\n    list COMMAND", help_screen)
         # TODO(zuhaochen): Change assertion after custom description is
@@ -257,14 +254,15 @@ class HelpTest(testutils.BaseTestCase):
         self.assertNotIn("DESCRIPTION", help_screen)
         # We don't check the listed commands either since the list API could
         # potentially change between Python versions.
-        self.assertIn("COMMANDS\n    COMMAND is one of the following:\n", help_screen)
+        self.assertIn("COMMANDS\n    COMMAND is one of the following:\n",
+                      help_screen)
 
     def testHelpTextShortList(self):
         """ """
         component = [10]
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, "list")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(
+                                            component, "list"))
         self.assertIn("NAME\n    list", help_screen)
         self.assertIn("SYNOPSIS\n    list COMMAND", help_screen)
         # TODO(zuhaochen): Change assertion after custom description is
@@ -274,55 +272,57 @@ class HelpTest(testutils.BaseTestCase):
         # We don't check the listed commands comprehensively since the list API
         # could potentially change between Python versions. Check a few
         # functions(command) that we're confident likely remain available.
-        self.assertIn("COMMANDS\n    COMMAND is one of the following:\n", help_screen)
+        self.assertIn("COMMANDS\n    COMMAND is one of the following:\n",
+                      help_screen)
         self.assertIn("     append\n", help_screen)
 
     def testHelpTextInt(self):
         """ """
         component = 7
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, "7")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(component, "7"))
         self.assertIn("NAME\n    7", help_screen)
         self.assertIn("SYNOPSIS\n    7 COMMAND | VALUE", help_screen)
         # TODO(zuhaochen): Change assertion after implementing custom
         # description for int.
         self.assertNotIn("DESCRIPTION", help_screen)
-        self.assertIn("COMMANDS\n    COMMAND is one of the following:\n", help_screen)
-        self.assertIn("VALUES\n    VALUE is one of the following:\n", help_screen)
+        self.assertIn("COMMANDS\n    COMMAND is one of the following:\n",
+                      help_screen)
+        self.assertIn("VALUES\n    VALUE is one of the following:\n",
+                      help_screen)
 
     def testHelpTextNoInit(self):
         """ """
         component = tc.OldStyleEmpty
-        help_screen = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, "OldStyleEmpty")
-        )
+        help_screen = helptext.HelpText(component=component,
+                                        trace=trace.FireTrace(
+                                            component, "OldStyleEmpty"))
         self.assertIn("NAME\n    OldStyleEmpty", help_screen)
         self.assertIn("SYNOPSIS\n    OldStyleEmpty", help_screen)
 
-    @testutils.skipIf(six.PY2, "Python 2 does not support keyword-only arguments.")
+    @testutils.skipIf(six.PY2,
+                      "Python 2 does not support keyword-only arguments.")
     def testHelpTextKeywordOnlyArgumentsWithDefault(self):
         """ """
         component = tc.py3.KeywordOnly.with_default  # pytype: disable=module-attr
-        output = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, "with_default")
-        )
+        output = helptext.HelpText(component=component,
+                                   trace=trace.FireTrace(
+                                       component, "with_default"))
         self.assertIn("NAME\n    with_default", output)
         self.assertIn("FLAGS\n    --x=X", output)
 
-    @testutils.skipIf(six.PY2, "Python 2 does not support keyword-only arguments.")
+    @testutils.skipIf(six.PY2,
+                      "Python 2 does not support keyword-only arguments.")
     def testHelpTextKeywordOnlyArgumentsWithoutDefault(self):
         """ """
         component = tc.py3.KeywordOnly.double  # pytype: disable=module-attr
-        output = helptext.HelpText(
-            component=component, trace=trace.FireTrace(component, "double")
-        )
+        output = helptext.HelpText(component=component,
+                                   trace=trace.FireTrace(component, "double"))
         self.assertIn("NAME\n    double", output)
         self.assertIn("FLAGS\n    --count=COUNT (required)", output)
 
     @testutils.skipIf(
-        six.PY2, "Python 2 does not support required name-only arguments."
-    )
+        six.PY2, "Python 2 does not support required name-only arguments.")
     def testHelpTextFunctionMixedDefaults(self):
         """ """
         component = tc.py3.HelpTextComponent().identity
@@ -359,7 +359,8 @@ VALUES
 
      message
        The default message to print."""
-        self.assertEqual(textwrap.dedent(expected_output).strip(), help_output.strip())
+        self.assertEqual(
+            textwrap.dedent(expected_output).strip(), help_output.strip())
 
     def testHelpScreenForFunctionDocstringWithLineBreak(self):
         """ """
@@ -382,7 +383,8 @@ VALUES
 
     NOTES
         You can also use flags syntax for POSITIONAL ARGUMENTS"""
-        self.assertEqual(textwrap.dedent(expected_output).strip(), help_output.strip())
+        self.assertEqual(
+            textwrap.dedent(expected_output).strip(), help_output.strip())
 
     def testHelpScreenForFunctionFunctionWithDefaultArgs(self):
         """ """
@@ -403,7 +405,8 @@ VALUES
         --count=COUNT
             Default: 0
             Input number that you want to double."""
-        self.assertEqual(textwrap.dedent(expected_output).strip(), help_output.strip())
+        self.assertEqual(
+            textwrap.dedent(expected_output).strip(), help_output.strip())
 
     def testHelpTextUnderlineFlag(self):
         """ """
@@ -411,9 +414,11 @@ VALUES
         t = trace.FireTrace(component, name="triple")
         help_screen = helptext.HelpText(component, t)
         self.assertIn(formatting.Bold("NAME") + "\n    triple", help_screen)
-        self.assertIn(formatting.Bold("SYNOPSIS") + "\n    triple <flags>", help_screen)
         self.assertIn(
-            formatting.Bold("FLAGS") + "\n    --" + formatting.Underline("count"),
+            formatting.Bold("SYNOPSIS") + "\n    triple <flags>", help_screen)
+        self.assertIn(
+            formatting.Bold("FLAGS") + "\n    --" +
+            formatting.Underline("count"),
             help_screen,
         )
 
@@ -422,10 +427,12 @@ VALUES
         component = tc.ClassWithDocstring()
         t = trace.FireTrace(component, name="ClassWithDocstring")
         help_screen = helptext.HelpText(component, t)
-        self.assertIn(formatting.Bold("NAME") + "\n    ClassWithDocstring", help_screen)
+        self.assertIn(
+            formatting.Bold("NAME") + "\n    ClassWithDocstring", help_screen)
         self.assertIn(formatting.Bold("COMMANDS") + "\n", help_screen)
         self.assertIn(
-            formatting.BoldUnderline("COMMAND") + " is one of the following:\n",
+            formatting.BoldUnderline("COMMAND") +
+            " is one of the following:\n",
             help_screen,
         )
         self.assertIn(formatting.Bold("print_msg") + "\n", help_screen)
@@ -434,7 +441,9 @@ VALUES
         """ """
         component = tc.TypedProperties()
         t = trace.FireTrace(component, name="TypedProperties")
-        help_screen = helptext.HelpText(component=component, trace=t, verbose=True)
+        help_screen = helptext.HelpText(component=component,
+                                        trace=t,
+                                        verbose=True)
         print(help_screen)
         self.assertIn("GROUPS", help_screen)
         self.assertIn("GROUP is one of the following:", help_screen)
@@ -451,7 +460,9 @@ VALUES
         component = 9
         t = trace.FireTrace(component, name="int", separator="-")
         t.AddSeparator()
-        help_screen = helptext.HelpText(component=component, trace=t, verbose=False)
+        help_screen = helptext.HelpText(component=component,
+                                        trace=t,
+                                        verbose=False)
         self.assertIn("int -", help_screen)
         self.assertNotIn("int - -", help_screen)
 
@@ -460,7 +471,9 @@ VALUES
         component = tc.WithDefaults().double
         t = trace.FireTrace(component, name="double", separator="-")
         t.AddSeparator()
-        help_screen = helptext.HelpText(component=component, trace=t, verbose=True)
+        help_screen = helptext.HelpText(component=component,
+                                        trace=t,
+                                        verbose=True)
         self.assertIn("double -", help_screen)
         self.assertIn("double - -", help_screen)
 
@@ -480,7 +493,8 @@ class UsageTest(testutils.BaseTestCase):
     For detailed information on this command, run:
       NoDefaults --help"""
 
-        self.assertEqual(usage_output, textwrap.dedent(expected_output).lstrip("\n"))
+        self.assertEqual(usage_output,
+                         textwrap.dedent(expected_output).lstrip("\n"))
 
     def testUsageOutputVerbose(self):
         """ """
@@ -493,7 +507,8 @@ class UsageTest(testutils.BaseTestCase):
 
     For detailed information on this command, run:
       NoDefaults --help"""
-        self.assertEqual(usage_output, textwrap.dedent(expected_output).lstrip("\n"))
+        self.assertEqual(usage_output,
+                         textwrap.dedent(expected_output).lstrip("\n"))
 
     def testUsageOutputMethod(self):
         """ """
@@ -506,7 +521,8 @@ class UsageTest(testutils.BaseTestCase):
 
     For detailed information on this command, run:
       NoDefaults double --help"""
-        self.assertEqual(usage_output, textwrap.dedent(expected_output).lstrip("\n"))
+        self.assertEqual(usage_output,
+                         textwrap.dedent(expected_output).lstrip("\n"))
 
     def testUsageOutputFunctionWithHelp(self):
         """ """
@@ -519,7 +535,8 @@ class UsageTest(testutils.BaseTestCase):
 
     For detailed information on this command, run:
       function_with_help -- --help"""
-        self.assertEqual(usage_output, textwrap.dedent(expected_output).lstrip("\n"))
+        self.assertEqual(usage_output,
+                         textwrap.dedent(expected_output).lstrip("\n"))
 
     def testUsageOutputFunctionWithDocstring(self):
         """ """
@@ -532,11 +549,11 @@ class UsageTest(testutils.BaseTestCase):
 
     For detailed information on this command, run:
       multiplier_with_docstring --help"""
-        self.assertEqual(textwrap.dedent(expected_output).lstrip("\n"), usage_output)
+        self.assertEqual(
+            textwrap.dedent(expected_output).lstrip("\n"), usage_output)
 
     @testutils.skipIf(
-        six.PY2, "Python 2 does not support required name-only arguments."
-    )
+        six.PY2, "Python 2 does not support required name-only arguments.")
     def testUsageOutputFunctionMixedDefaults(self):
         """ """
         component = tc.py3.HelpTextComponent().identity
@@ -556,9 +573,9 @@ class UsageTest(testutils.BaseTestCase):
         """ """
         # This is both a group and a command.
         component = tc.CallableWithKeywordArgument()
-        t = trace.FireTrace(
-            component, name="CallableWithKeywordArgument", separator="@"
-        )
+        t = trace.FireTrace(component,
+                            name="CallableWithKeywordArgument",
+                            separator="@")
         usage_output = helptext.UsageText(component, trace=t, verbose=False)
         expected_output = """
     Usage: CallableWithKeywordArgument <command> | <flags>
@@ -567,7 +584,8 @@ class UsageTest(testutils.BaseTestCase):
 
     For detailed information on this command, run:
       CallableWithKeywordArgument -- --help"""
-        self.assertEqual(textwrap.dedent(expected_output).lstrip("\n"), usage_output)
+        self.assertEqual(
+            textwrap.dedent(expected_output).lstrip("\n"), usage_output)
 
     def testUsageOutputConstructorWithParameter(self):
         """ """
@@ -579,7 +597,8 @@ class UsageTest(testutils.BaseTestCase):
 
     For detailed information on this command, run:
       InstanceVars --help"""
-        self.assertEqual(textwrap.dedent(expected_output).lstrip("\n"), usage_output)
+        self.assertEqual(
+            textwrap.dedent(expected_output).lstrip("\n"), usage_output)
 
     def testUsageOutputConstructorWithParameterVerbose(self):
         """ """
@@ -592,7 +611,8 @@ class UsageTest(testutils.BaseTestCase):
 
     For detailed information on this command, run:
       InstanceVars --help"""
-        self.assertEqual(textwrap.dedent(expected_output).lstrip("\n"), usage_output)
+        self.assertEqual(
+            textwrap.dedent(expected_output).lstrip("\n"), usage_output)
 
     def testUsageOutputEmptyDict(self):
         """ """
@@ -604,7 +624,8 @@ class UsageTest(testutils.BaseTestCase):
 
     For detailed information on this command, run:
       EmptyDict --help"""
-        self.assertEqual(textwrap.dedent(expected_output).lstrip("\n"), usage_output)
+        self.assertEqual(
+            textwrap.dedent(expected_output).lstrip("\n"), usage_output)
 
     def testUsageOutputNone(self):
         """ """
@@ -616,7 +637,8 @@ class UsageTest(testutils.BaseTestCase):
 
     For detailed information on this command, run:
       None --help"""
-        self.assertEqual(textwrap.dedent(expected_output).lstrip("\n"), usage_output)
+        self.assertEqual(
+            textwrap.dedent(expected_output).lstrip("\n"), usage_output)
 
     def testInitRequiresFlagSyntaxSubclassNamedTuple(self):
         """ """
