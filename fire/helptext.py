@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilities for producing help strings for use in Fire CLIs.
 
 Can produce help strings suitable for display in Fire CLIs for any type of
@@ -28,14 +27,20 @@ Help screens are shown when the user requests help with the help flag (--help).
 Help screens are shown in a less-style console view, and contain detailed help
 information.
 """
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import itertools
 import sys
 
-from fire import (completion, custom_descriptions, decorators, docstrings,
-                  formatting, inspectutils, value_types)
+from fire import completion
+from fire import custom_descriptions
+from fire import decorators
+from fire import docstrings
+from fire import formatting
+from fire import inspectutils
+from fire import value_types
 
 LINE_LENGTH = 80
 SECTION_INDENTATION = 4

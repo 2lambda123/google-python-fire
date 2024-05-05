@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Tests for the helptext module."""
-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import sys
@@ -22,9 +22,11 @@ import textwrap
 
 import six
 
-from fire import formatting, helptext
+from fire import formatting
+from fire import helptext
 from fire import test_components as tc
-from fire import testutils, trace
+from fire import testutils
+from fire import trace
 
 
 class HelpTest(testutils.BaseTestCase):
