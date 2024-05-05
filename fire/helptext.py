@@ -94,8 +94,8 @@ def HelpText(component, trace=None, verbose=False):
 def _NameSection(component, info, trace=None, verbose=False):
     """The "Name" section of the help string.
 
-    :param component: 
-    :param info: 
+    :param component:
+    :param info:
     :param trace:  (Default value = None)
     :param verbose:  (Default value = False)
 
@@ -124,10 +124,10 @@ def _NameSection(component, info, trace=None, verbose=False):
 def _SynopsisSection(component, actions_grouped_by_kind, spec, metadata, trace=None):
     """The "Synopsis" section of the help string.
 
-    :param component: 
-    :param actions_grouped_by_kind: 
-    :param spec: 
-    :param metadata: 
+    :param component:
+    :param actions_grouped_by_kind:
+    :param spec:
+    :param metadata:
     :param trace:  (Default value = None)
 
     """
@@ -187,9 +187,9 @@ def _DescriptionSection(component, info):
 def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec):
     """
 
-    :param flag: 
-    :param docstring_info: 
-    :param spec: 
+    :param flag:
+    :param docstring_info:
+    :param spec:
 
     """
     return _CreateFlagItem(
@@ -200,9 +200,9 @@ def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec):
 def _ArgsAndFlagsSections(info, spec, metadata):
     """The "Args and Flags" sections of the help string.
 
-    :param info: 
-    :param spec: 
-    :param metadata: 
+    :param info:
+    :param spec:
+    :param metadata:
 
     """
     args_with_no_defaults = spec.args[: len(spec.args) - len(spec.defaults)]
@@ -283,8 +283,8 @@ def _ArgsAndFlagsSections(info, spec, metadata):
 def _UsageDetailsSections(component, actions_grouped_by_kind):
     """The usage details sections of the help string.
 
-    :param component: 
-    :param actions_grouped_by_kind: 
+    :param component:
+    :param actions_grouped_by_kind:
 
     """
     groups, commands, values, indexes = actions_grouped_by_kind
@@ -305,7 +305,7 @@ def _UsageDetailsSections(component, actions_grouped_by_kind):
 def _GetSummary(info):
     """
 
-    :param info: 
+    :param info:
 
     """
     docstring_info = info["docstring_info"]
@@ -315,7 +315,7 @@ def _GetSummary(info):
 def _GetDescription(info):
     """
 
-    :param info: 
+    :param info:
 
     """
     docstring_info = info["docstring_info"]
@@ -324,10 +324,10 @@ def _GetDescription(info):
 
 def _GetArgsAndFlagsString(spec, metadata):
     """The args and flags string for showing how to call a function.
-    
+
     If positional arguments are accepted, the args will be shown as positional.
     E.g. "ARG1 ARG2 [--flag=FLAG]"
-    
+
     If positional arguments are disallowed, the args will be shown with flags
     syntax.
     E.g. "--arg1=ARG1 [--flag=FLAG]"
@@ -376,7 +376,7 @@ def _GetArgsAndFlagsString(spec, metadata):
 def _GetPossibleActions(actions_grouped_by_kind):
     """The list of possible action kinds.
 
-    :param actions_grouped_by_kind: 
+    :param actions_grouped_by_kind:
 
     """
     possible_actions = []
@@ -389,7 +389,7 @@ def _GetPossibleActions(actions_grouped_by_kind):
 def _GetPossibleActionsString(possible_actions):
     """A help screen string listing the possible action kinds available.
 
-    :param possible_actions: 
+    :param possible_actions:
 
     """
     return " | ".join(
@@ -400,7 +400,7 @@ def _GetPossibleActionsString(possible_actions):
 def _GetActionsGroupedByKind(component, verbose=False):
     """Gets lists of available actions, grouped by action kind.
 
-    :param component: 
+    :param component:
     :param verbose:  (Default value = False)
 
     """
@@ -446,8 +446,8 @@ def _GetCurrentCommand(trace=None, include_separators=True):
 def _CreateOutputSection(name, content):
     """
 
-    :param name: 
-    :param content: 
+    :param name:
+    :param content:
     :returns: {content}""".format(
         name=formatting.Bold(name),
         content=formatting.Indent(content, SECTION_INDENTATION),
@@ -588,8 +588,8 @@ def _GetArgDefault(flag, spec):
 def _CreateItem(name, description, indent=2):
     """
 
-    :param name: 
-    :param description: 
+    :param name:
+    :param description:
     :param indent:  (Default value = 2)
 
     """
@@ -604,8 +604,8 @@ def _CreateItem(name, description, indent=2):
 def _GetArgDescription(name, docstring_info):
     """
 
-    :param name: 
-    :param docstring_info: 
+    :param name:
+    :param docstring_info:
 
     """
     if docstring_info.args:
@@ -618,7 +618,7 @@ def _GetArgDescription(name, docstring_info):
 def _MakeUsageDetailsSection(action_group):
     """Creates a usage details section for the provided action group.
 
-    :param action_group: 
+    :param action_group:
 
     """
     item_strings = []
@@ -645,8 +645,8 @@ def _MakeUsageDetailsSection(action_group):
 def _ValuesUsageDetailsSection(component, values):
     """Creates a section tuple for the values section of the usage details.
 
-    :param component: 
-    :param values: 
+    :param component:
+    :param values:
 
     """
     value_item_strings = []
@@ -669,8 +669,8 @@ def _ValuesUsageDetailsSection(component, values):
 def _NewChoicesSection(name, choices):
     """
 
-    :param name: 
-    :param choices: 
+    :param name:
+    :param choices:
 
     """
     return _CreateItem(
@@ -747,7 +747,7 @@ For detailed information on this command, run:
 def _GetPossibleActionsUsageString(possible_actions):
     """
 
-    :param possible_actions: 
+    :param possible_actions:
 
     """
     if possible_actions:
@@ -758,7 +758,7 @@ def _GetPossibleActionsUsageString(possible_actions):
 def _UsageAvailabilityLines(actions_grouped_by_kind):
     """
 
-    :param actions_grouped_by_kind: 
+    :param actions_grouped_by_kind:
 
     """
     availability_lines = []
@@ -775,8 +775,8 @@ def _UsageAvailabilityLines(actions_grouped_by_kind):
 def _GetCallableUsageItems(spec, metadata):
     """A list of elements that comprise the usage summary for a callable.
 
-    :param spec: 
-    :param metadata: 
+    :param spec:
+    :param metadata:
 
     """
     args_with_no_defaults = spec.args[: len(spec.args) - len(spec.defaults)]
@@ -806,7 +806,7 @@ def _GetCallableUsageItems(spec, metadata):
 def _KeywordOnlyArguments(spec, required=True):
     """
 
-    :param spec: 
+    :param spec:
     :param required:  (Default value = True)
 
     """
@@ -818,7 +818,7 @@ def _KeywordOnlyArguments(spec, required=True):
 def _GetCallableAvailabilityLines(spec):
     """The list of availability lines for a callable for use in a usage string.
 
-    :param spec: 
+    :param spec:
 
     """
     args_with_defaults = spec.args[len(spec.args) - len(spec.defaults) :]
@@ -865,8 +865,8 @@ def _CreateAvailabilityLine(
 ):
     """
 
-    :param header: 
-    :param items: 
+    :param header:
+    :param items:
     :param header_indent:  (Default value = 2)
     :param items_indent:  (Default value = 25)
     :param line_length:  (Default value = LINE_LENGTH)
@@ -891,7 +891,7 @@ class ActionGroup(object):
     def Add(self, name, member=None):
         """
 
-        :param name: 
+        :param name:
         :param member:  (Default value = None)
 
         """
