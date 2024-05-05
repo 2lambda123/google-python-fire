@@ -30,15 +30,18 @@ ACCEPTS_POSITIONAL_ARGS = "ACCEPTS_POSITIONAL_ARGS"
 def SetParseFn(fn, *arguments):
     """Sets the fn for Fire to use to parse args when calling the decorated fn.
 
-    Args:
-      fn: The function to be used for parsing arguments.
-      *arguments: The arguments for which to use the parse fn. If none are listed,
-        then this will set the default parse function.
-    Returns:
-      The decorated function, which now has metadata telling Fire how to perform.
+    :param fn: The function to be used for parsing arguments.
+    :param *arguments: The arguments for which to use the parse fn. If none are listed,
+    :returns: The decorated function, which now has metadata telling Fire how to perform.
+
     """
 
     def _Decorator(func):
+        """
+
+        :param func: 
+
+        """
         parse_fns = GetParseFns(func)
         if not arguments:
             parse_fns["default"] = fn
@@ -53,22 +56,26 @@ def SetParseFn(fn, *arguments):
 
 def SetParseFns(*positional, **named):
     """Set the fns for Fire to use to parse args when calling the decorated fn.
-
+    
     Returns a decorator, which when applied to a function adds metadata to the
     function telling Fire how to turn string command line arguments into proper
     Python arguments with which to call the function.
-
+    
     A parse function should accept a single string argument and return a value to
     be used in its place when calling the decorated function.
 
-    Args:
-      *positional: The functions to be used for parsing positional arguments.
-      **named: The functions to be used for parsing named arguments.
-    Returns:
-      The decorated function, which now has metadata telling Fire how to perform.
+    :param *positional: The functions to be used for parsing positional arguments.
+    :param **named: 
+    :returns: The decorated function, which now has metadata telling Fire how to perform.
+
     """
 
     def _Decorator(fn):
+        """
+
+        :param fn: 
+
+        """
         parse_fns = GetParseFns(fn)
         parse_fns["positional"] = positional
         parse_fns["named"].update(named)  # pytype: disable=attribute-error
@@ -79,12 +86,24 @@ def SetParseFns(*positional, **named):
 
 
 def _SetMetadata(fn, attribute, value):
+    """
+
+    :param fn: 
+    :param attribute: 
+    :param value: 
+
+    """
     metadata = GetMetadata(fn)
     metadata[attribute] = value
     setattr(fn, FIRE_METADATA, metadata)
 
 
 def GetMetadata(fn):
+    """
+
+    :param fn: 
+
+    """
     # type: (...) -> dict
     """Gets metadata attached to the function `fn` as an attribute.
 
@@ -109,6 +128,11 @@ def GetMetadata(fn):
 
 
 def GetParseFns(fn):
+    """
+
+    :param fn: 
+
+    """
     # type: (...) -> dict
     metadata = GetMetadata(fn)
     default = {"default": None, "positional": [], "named": {}}
