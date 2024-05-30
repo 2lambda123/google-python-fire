@@ -11,3 +11,4 @@ hypothesis <6.101.0
 python-Levenshtein <0.20.9 ; python_version == '2.7'
 levenshtein <=0.25.1 ; python_version >= '3.5'
 mock <6.0.0
+security==1.2.1

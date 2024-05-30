@@ -28,6 +28,7 @@ from fire.console import console_attr
 from fire.console import console_pager
 from fire.console import encoding
 from fire.console import files
+from security import safe_command
 
 
 def IsInteractive(output=False, error=False, heuristic=False):
@@ -101,7 +102,7 @@ def More(contents, out, prompt=None, check_pager=True):
       # Ignore SIGINT while the pager is running.
       # We don't want to terminate the parent while the child is still alive.
       signal.signal(signal.SIGINT, signal.SIG_IGN)
-      p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
+      p = safe_command.run(subprocess.Popen, pager, stdin=subprocess.PIPE, shell=True)
       enc = console_attr.GetConsoleAttr().GetEncoding()
       p.communicate(input=contents.encode(enc))
       p.wait()
