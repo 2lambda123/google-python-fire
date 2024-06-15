@@ -24,12 +24,16 @@ import inspect
 
 
 def Embed(variables, verbose=False):
-  """Drops into a Python REPL with variables available as local variables.
+  """  Drops into a Python REPL with variables available as local variables.
+
+  This function allows the user to enter a Python REPL with the specified
+  variables available as local variables.
 
   Args:
-    variables: A dict of variables to make available. Keys are variable names.
-        Values are variable values.
-    verbose: Whether to include 'hidden' members, those keys starting with _.
+      variables (dict): A dictionary of variables to make available. Keys are variable names,
+          and values are variable values.
+      verbose (bool?): Whether to include 'hidden' members, those keys starting with _.
+          Defaults to False.
   """
   print(_AvailableString(variables, verbose))
 
@@ -40,14 +44,20 @@ def Embed(variables, verbose=False):
 
 
 def _AvailableString(variables, verbose=False):
-  """Returns a string describing what objects are available in the Python REPL.
+  """  Returns a string describing what objects are available in the Python
+  REPL.
+
+  It generates a string containing the list of available objects in the
+  Python REPL based on the input dictionary of variables.
 
   Args:
-    variables: A dict of the object to be available in the REPL.
-    verbose: Whether to include 'hidden' members, those keys starting with _.
+      variables (dict): A dictionary of objects to be available in the REPL.
+      verbose (bool?): Whether to include 'hidden' members, i.e., keys starting with '_'.
+          Defaults to False.
+
   Returns:
-    A string fit for printing at the start of the REPL, indicating what objects
-    are available for the user to use.
+      str: A string fit for printing at the start of the REPL, indicating what
+          objects are available for the user to use.
   """
   modules = []
   other = []
@@ -78,12 +88,12 @@ def _AvailableString(variables, verbose=False):
 
 
 def _EmbedIPython(variables, argv=None):
-  """Drops into an IPython REPL with variables available for use.
+  """  Drops into an IPython REPL with variables available for use.
 
   Args:
-    variables: A dict of variables to make available. Keys are variable names.
-        Values are variable values.
-    argv: The argv to use for starting ipython. Defaults to an empty list.
+      variables (dict): A dictionary of variables to make available. Keys are variable names.
+          Values are variable values.
+      argv (list?): The argv to use for starting IPython. Defaults to None.
   """
   import IPython  # pylint: disable=import-outside-toplevel,g-import-not-at-top
   argv = argv or []
@@ -91,5 +101,15 @@ def _EmbedIPython(variables, argv=None):
 
 
 def _EmbedCode(variables):
+  """Embeds a Python interactive console using the provided variables.
+
+  This function embeds a Python interactive console using the variables
+  passed as input.
+
+  Args:
+      variables (dict): A dictionary containing the variables to be available in the interactive
+          console.
+  """
+
   import code  # pylint: disable=import-outside-toplevel,g-import-not-at-top
   code.InteractiveConsole(variables).interact()
