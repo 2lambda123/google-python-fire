@@ -74,37 +74,13 @@ if six.PY34:
 
 
 def Fire(component=None, command=None, name=None, serialize=None):
-  """This function, Fire, is the main entrypoint for Python Fire.
+  """  This function, Fire, is the main entrypoint for Python Fire.
 
-  Executes a command either from the `command` argument or from sys.argv by
-  recursively traversing the target object `component`'s members consuming
-  arguments, evaluating functions, and instantiating classes as it goes.
-
-  When building a CLI with Fire, your main method should call this function.
-
-  Args:
-    component: The initial target component.
-    command: Optional. If supplied, this is the command executed. If not
-        supplied, then the command is taken from sys.argv instead. This can be
-        a string or a list of strings; a list of strings is preferred.
-    name: Optional. The name of the command as entered at the command line.
-        Used in interactive mode and for generating the completion script.
-    serialize: Optional. If supplied, all objects are serialized to text via
-        the provided callable.
-  Returns:
-    The result of executing the Fire command. Execution begins with the initial
-    target component. The component is updated by using the command arguments
-    to either access a member of the current component, call the current
-    component (if it's a function), or instantiate the current component (if
-    it's a class). When all arguments are consumed and there's no function left
-    to call or class left to instantiate, the resulting current component is
-    the final result.
-  Raises:
-    ValueError: If the command argument is supplied, but not a string or a
-        sequence of arguments.
-    FireExit: When Fire encounters a FireError, Fire will raise a FireExit with
-        code 2. When used with the help or trace flags, Fire will raise a
-        FireExit with code 0 if successful.
+  Executes a command either from the `command` argument or from sys.argv
+  by recursively traversing the target object `component`'s members
+  consuming arguments, evaluating functions, and instantiating classes as
+  it goes.  When building a CLI with Fire, your main method should call
+  this function.
   """
   name = name or os.path.basename(sys.argv[0])
 
@@ -168,12 +144,28 @@ def Fire(component=None, command=None, name=None, serialize=None):
 
 
 def Display(lines, out):
+  """Display the given lines of text to the specified output.
+
+  Args:
+      lines (list): A list of strings representing lines of text to be displayed.
+      out (file object): The output file object where the text will be displayed.
+  """
+
   text = '\n'.join(lines) + '\n'
   console_io.More(text, out=out)
 
 
 def CompletionScript(name, component, shell):
-  """Returns the text of the completion script for a Fire CLI."""
+  """  Returns the text of the completion script for a Fire CLI.
+
+  Args:
+      name (str): The name of the completion script.
+      component (str): The component of the completion script.
+      shell (str): The shell type for which the completion script is generated.
+
+  Returns:
+      str: The completion script text.
+  """
   return completion.Script(name, component, shell=shell)
 
 
@@ -207,15 +199,17 @@ class FireExit(SystemExit):  # pylint: disable=g-bad-exception-name
 
 
 def _IsHelpShortcut(component_trace, remaining_args):
-  """Determines if the user is trying to access help without '--' separator.
+  """  Determines if the user is trying to access help without '--' separator.
 
-  For example, mycmd.py --help instead of mycmd.py -- --help.
+  This function checks if the user is attempting to access help without
+  using the '--' separator.
 
   Args:
-    component_trace: (FireTrace) The trace for the Fire command.
-    remaining_args: List of remaining args that haven't been consumed yet.
+      component_trace (FireTrace): The trace for the Fire command.
+      remaining_args (list): List of remaining args that haven't been consumed yet.
+
   Returns:
-    True if help is requested, False otherwise.
+      bool: True if help is requested, False otherwise.
   """
   show_help = False
   if remaining_args:
@@ -240,7 +234,8 @@ def _IsHelpShortcut(component_trace, remaining_args):
 
 
 def _PrintResult(component_trace, verbose=False, serialize=None):
-  """Prints the result of the Fire call to stdout in a human readable way."""
+  """  Prints the result of the Fire call to stdout in a human readable way.
+  """
   # TODO(dbieber): Design human readable deserializable serialization method
   # and move serialization to its own module.
   result = component_trace.GetResult()
@@ -279,7 +274,15 @@ def _PrintResult(component_trace, verbose=False, serialize=None):
 
 
 def _DisplayError(component_trace):
-  """Prints the Fire trace and the error to stdout."""
+  """  Prints the Fire trace and the error to stdout.
+
+  This function checks if help flag is present in the component trace
+  arguments. If help flag is present, it shows help text with the command.
+  Otherwise, it prints the error message and usage text.
+
+  Args:
+      component_trace (obj): The Fire component trace object.
+  """
   result = component_trace.GetResult()
 
   output = []
@@ -306,13 +309,18 @@ def _DisplayError(component_trace):
 
 
 def _DictAsString(result, verbose=False):
-  """Returns a dict as a string.
+  """  Returns a dict as a string.
+
+  This function takes a dictionary as input and converts it into a string
+  representation. It provides an option to include 'hidden' members (keys
+  starting with _) based on the 'verbose' parameter.
 
   Args:
-    result: The dict to convert to a string
-    verbose: Whether to include 'hidden' members, those keys starting with _.
+      result (dict): The dictionary to convert to a string.
+      verbose (bool?): Whether to include 'hidden' members. Defaults to False.
+
   Returns:
-    A string representing the dict
+      str: A string representing the dictionary.
   """
 
   # We need to do 2 iterations over the items in the result dict
@@ -342,7 +350,17 @@ def _DictAsString(result, verbose=False):
 
 
 def _OneLineResult(result):
-  """Returns result serialized to a single line string."""
+  """  Returns result serialized to a single line string.
+
+  It serializes the result to a single line string by replacing newline
+  characters with spaces.
+
+  Args:
+      result: The input result to be serialized.
+
+  Returns:
+      str: The serialized result as a single line string.
+  """
   # TODO(dbieber): Ensure line is fewer than eg 120 characters.
   if isinstance(result, six.string_types):
     return str(result).replace('\n', ' ')
@@ -363,55 +381,29 @@ def _OneLineResult(result):
 
 
 def _Fire(component, args, parsed_flag_args, context, name=None):
-  """Execute a Fire command on a target component using the args supplied.
+  """  Execute a Fire command on a target component using the args supplied.
 
-  Arguments that come after a final isolated '--' are treated as Flags, eg for
-  interactive mode or completion script generation.
-
-  Other arguments are consumed by the execution of the Fire command, eg in the
-  traversal of the members of the component, or in calling a function or
-  instantiating a class found during the traversal.
-
-  The steps performed by this method are:
-
-  1. Parse any Flag args (the args after the final --)
-
-  2. Start with component as the current component.
-  2a. If the current component is a class, instantiate it using args from args.
-  2b. If the component is a routine, call it using args from args.
-  2c. If the component is a sequence, index into it using an arg from
-      args.
-  2d. If possible, access a member from the component using an arg from args.
-  2e. If the component is a callable object, call it using args from args.
-  2f. Repeat 2a-2e until no args remain.
-  Note: Only the first applicable rule from 2a-2e is applied in each iteration.
-  After each iteration of step 2a-2e, the current component is updated to be the
-  result of the applied rule.
-
-  3a. Embed into ipython REPL if interactive mode is selected.
-  3b. Generate a completion script if that flag is provided.
-
-  In step 2, arguments will only ever be consumed up to a separator; a single
-  step will never consume arguments from both sides of a separator.
-  The separator defaults to a hyphen (-), and can be overwritten with the
-  --separator Fire argument.
-
-  Args:
-    component: The target component for Fire.
-    args: A list of args to consume in Firing on the component, usually from
-        the command line.
-    parsed_flag_args: The values of the flag args (e.g. --verbose, --separator)
-        that are part of every Fire CLI.
-    context: A dict with the local and global variables available at the call
-        to Fire.
-    name: Optional. The name of the command. Used in interactive mode and in
-        the tab completion script.
-  Returns:
-    FireTrace of components starting with component, tracing Fire's execution
-        path as it consumes args.
-  Raises:
-    ValueError: If there are arguments that cannot be consumed.
-    ValueError: If --completion is specified but no name available.
+  Arguments that come after a final isolated '--' are treated as Flags, eg
+  for interactive mode or completion script generation.  Other arguments
+  are consumed by the execution of the Fire command, eg in the traversal
+  of the members of the component, or in calling a function or
+  instantiating a class found during the traversal.  The steps performed
+  by this method are:  1. Parse any Flag args (the args after the final
+  --)  2. Start with component as the current component.     2a. If the
+  current component is a class, instantiate it using args from args.
+  2b. If the component is a routine, call it using args from args.     2c.
+  If the component is a sequence, index into it using an arg from
+  args.     2d. If possible, access a member from the component using an
+  arg from args.     2e. If the component is a callable object, call it
+  using args from args.     2f. Repeat 2a-2e until no args remain.
+  Note: Only the first applicable rule from 2a-2e is applied in each
+  iteration.     After each iteration of step 2a-2e, the current component
+  is updated to be the     result of the applied rule.  3a. Embed into
+  ipython REPL if interactive mode is selected. 3b. Generate a completion
+  script if that flag is provided.  In step 2, arguments will only ever be
+  consumed up to a separator; a single step will never consume arguments
+  from both sides of a separator. The separator defaults to a hyphen (-),
+  and can be overwritten with the --separator Fire argument.
   """
   verbose = parsed_flag_args.verbose
   interactive = parsed_flag_args.interactive
@@ -624,20 +616,10 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
 
 
 def _GetMember(component, args):
-  """Returns a subcomponent of component by consuming an arg from args.
+  """  Returns a subcomponent of component by consuming an arg from args.
 
-  Given a starting component and args, this function gets a member from that
-  component, consuming one arg in the process.
-
-  Args:
-    component: The component from which to get a member.
-    args: Args from which to consume in the search for the next component.
-  Returns:
-    component: The component that was found by consuming an arg.
-    consumed_args: The args that were consumed by getting this member.
-    remaining_args: The remaining args that haven't been consumed yet.
-  Raises:
-    FireError: If we cannot consume an argument to get a member.
+  Given a starting component and args, this function gets a member from
+  that component, consuming one arg in the process.
   """
   members = dir(component)
   arg = args[0]
@@ -655,22 +637,26 @@ def _GetMember(component, args):
 
 def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
                         target=None):
-  """Call the component by consuming args from args, and update the FireTrace.
+  """  Call the component by consuming args from args, and update the
+  FireTrace.
 
-  The component could be a class, a routine, or a callable object. This function
-  calls the component and adds the appropriate action to component_trace.
+  The component could be a class, a routine, or a callable object. This
+  function calls the component and adds the appropriate action to
+  component_trace.
 
   Args:
-    component: The component to call
-    args: Args for calling the component
-    component_trace: FireTrace object that contains action trace
-    treatment: Type of treatment used. Indicating whether we treat the component
-        as a class, a routine, or a callable.
-    target: Target in FireTrace element, default is None. If the value is None,
-        the component itself will be used as target.
+      component: The component to call.
+      args: Args for calling the component.
+      component_trace: FireTrace object that contains action trace.
+      treatment (str): Type of treatment used. Indicating whether we treat the component
+          as a class, a routine, or a callable.
+      target: Target in FireTrace element, default is None. If the value is None,
+          the component itself will be used as target.
+
   Returns:
-    component: The object that is the result of the callable call.
-    remaining_args: The remaining args that haven't been consumed yet.
+      tuple: A tuple containing:
+          - component: The object that is the result of the callable call.
+          - remaining_args: The remaining args that haven't been consumed yet.
   """
   if not target:
     target = component
@@ -701,16 +687,13 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
 
 
 def _MakeParseFn(fn, metadata):
-  """Creates a parse function for fn.
+  """  Creates a parse function for the given function or class.
 
-  Args:
-    fn: The function or class to create the parse function for.
-    metadata: Additional metadata about the component the parse function is for.
-  Returns:
-    A parse function for fn. The parse function accepts a list of arguments
-    and returns (varargs, kwargs), remaining_args. The original function fn
-    can then be called with fn(*varargs, **kwargs). The remaining_args are
-    the leftover args from the arguments to the parse function.
+  This function generates a parse function for the provided function or
+  class, which accepts a list of arguments and returns (varargs, kwargs),
+  remaining_args. The original function fn can then be called with
+  fn(*varargs, **kwargs). The remaining_args are the leftover arguments
+  from the arguments to the parse function.
   """
   fn_spec = inspectutils.GetFullArgSpec(fn)
 
@@ -720,7 +703,12 @@ def _MakeParseFn(fn, metadata):
   required_kwonly = set(fn_spec.kwonlyargs) - set(fn_spec.kwonlydefaults)
 
   def _ParseFn(args):
-    """Parses the list of `args` into (varargs, kwargs), remaining_args."""
+    """    Parses the list of `args` into (varargs, kwargs), remaining_args.
+
+    This function parses the input arguments into keyword arguments,
+    remaining keyword arguments, and remaining positional arguments based on
+    the function specification.
+    """
     kwargs, remaining_kwargs, remaining_args = _ParseKeywordArgs(args, fn_spec)
 
     # Note: _ParseArgs modifies kwargs.
@@ -760,30 +748,10 @@ def _MakeParseFn(fn, metadata):
 
 def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
                remaining_args, metadata):
-  """Parses the positional and named arguments from the available supplied args.
+  """  Parses the positional and named arguments from the available supplied
+  args.
 
   Modifies kwargs, removing args as they are used.
-
-  Args:
-    fn_args: A list of argument names that the target function accepts,
-        including positional and named arguments, but not the varargs or kwargs
-        names.
-    fn_defaults: A list of the default values in the function argspec.
-    num_required_args: The number of required arguments from the function's
-        argspec. This is the number of arguments without a default value.
-    kwargs: Dict with named command line arguments and their values.
-    remaining_args: The remaining command line arguments, which may still be
-        used as positional arguments.
-    metadata: Metadata about the function, typically from Fire decorators.
-  Returns:
-    parsed_args: A list of values to be used as positional arguments for calling
-        the target function.
-    kwargs: The input dict kwargs modified with the used kwargs removed.
-    remaining_args: A list of the supplied args that have not been used yet.
-    capacity: Whether the call could have taken args in place of defaults.
-  Raises:
-    FireError: If additional positional arguments are expected, but none are
-        available.
   """
   accepts_positional_args = metadata.get(decorators.ACCEPTS_POSITIONAL_ARGS)
   capacity = False  # If we see a default get used, we'll set capacity to True
@@ -818,28 +786,15 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
 
 
 def _ParseKeywordArgs(args, fn_spec):
-  """Parses the supplied arguments for keyword arguments.
+  """  Parses the supplied arguments for keyword arguments.
 
-  Given a list of arguments, finds occurrences of --name value, and uses 'name'
-  as the keyword and 'value' as the value. Constructs and returns a dictionary
-  of these keyword arguments, and returns a list of the remaining arguments.
-
-  Only if fn_keywords is None, this only finds argument names used by the
-  function, specified through fn_args.
-
-  This returns the values of the args as strings. They are later processed by
+  Given a list of arguments, finds occurrences of --name value, and uses
+  'name' as the keyword and 'value' as the value. Constructs and returns a
+  dictionary of these keyword arguments, and returns a list of the
+  remaining arguments.  Only if fn_keywords is None, this only finds
+  argument names used by the function, specified through fn_args.  This
+  returns the values of the args as strings. They are later processed by
   _ParseArgs, which converts them to the appropriate type.
-
-  Args:
-    args: A list of arguments.
-    fn_spec: The inspectutils.FullArgSpec describing the given callable.
-  Returns:
-    kwargs: A dictionary mapping keywords to values.
-    remaining_kwargs: A list of the unused kwargs from the original args.
-    remaining_args: A list of the unused arguments from the original args.
-  Raises:
-    FireError: If a single-character flag is passed that could refer to multiple
-        possible args.
   """
   kwargs = {}
   remaining_kwargs = []
@@ -936,40 +891,62 @@ def _ParseKeywordArgs(args, fn_spec):
 
 
 def _IsFlag(argument):
-  """Determines if the argument is a flag argument.
+  """  Determines if the argument is a flag argument.
 
-  If it starts with a hyphen and isn't a negative number, it's a flag.
+  If the argument starts with a hyphen and is not a negative number, it is
+  considered a flag argument.
 
   Args:
-    argument: A command line argument that may or may not be a flag.
+      argument (str): A command line argument that may or may not be a flag.
+
   Returns:
-    A boolean indicating whether the argument is a flag.
+      bool: A boolean indicating whether the argument is a flag.
   """
   return _IsSingleCharFlag(argument) or _IsMultiCharFlag(argument)
 
 
 def _IsSingleCharFlag(argument):
-  """Determines if the argument is a single char flag (e.g. '-a')."""
+  """  Determines if the argument is a single character flag (e.g. '-a').
+
+  This function checks if the argument matches the pattern of a single
+  character flag.
+
+  Args:
+      argument (str): The argument to be checked.
+
+  Returns:
+      bool: True if the argument is a single character flag, False otherwise.
+  """
   return re.match('^-[a-zA-Z]$', argument) or re.match('^-[a-zA-Z]=', argument)
 
 
 def _IsMultiCharFlag(argument):
-  """Determines if the argument is a multi char flag (e.g. '--alpha')."""
+  """  Determines if the argument is a multi-character flag (e.g. '--alpha').
+
+  Args:
+      argument (str): The argument to be checked.
+
+  Returns:
+      bool: True if the argument is a multi-character flag, False otherwise.
+  """
   return argument.startswith('--') or re.match('^-[a-zA-Z]', argument)
 
 
 def _ParseValue(value, index, arg, metadata):
-  """Parses value, a string, into the appropriate type.
+  """  Parses a string value into the appropriate type based on function
+  metadata.
 
-  The function used to parse value is determined by the remaining arguments.
+  The function used to parse the input value is determined by the
+  remaining arguments and function metadata.
 
   Args:
-    value: The string value to be parsed, typically a command line argument.
-    index: The index of the value in the function's argspec.
-    arg: The name of the argument the value is being parsed for.
-    metadata: Metadata about the function, typically from Fire decorators.
+      value (str): The string value to be parsed, typically a command line argument.
+      index (int): The index of the value in the function's argspec.
+      arg (str): The name of the argument the value is being parsed for.
+      metadata (dict): Metadata about the function, typically from Fire decorators.
+
   Returns:
-    value, parsed into the appropriate type for calling a function.
+      The parsed value in the appropriate type for calling a function.
   """
   parse_fn = parser.DefaultParseValue
 
