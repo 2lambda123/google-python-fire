@@ -31,12 +31,33 @@ class InteractTest(testutils.BaseTestCase):
 
   @mock.patch(INTERACT_METHOD)
   def testInteract(self, mock_interact_method):
+    """Test the interaction method.
+
+    This function tests the interaction method by asserting that the mock
+    interact method has not been called, then calling the interact method
+    with an empty dictionary, and finally asserting that the mock interact
+    method has been called.
+
+    Args:
+        mock_interact_method: Mock object representing the interact method.
+    """
+
     self.assertFalse(mock_interact_method.called)
     interact.Embed({})
     self.assertTrue(mock_interact_method.called)
 
   @mock.patch(INTERACT_METHOD)
   def testInteractVariables(self, mock_interact_method):
+    """Test the interaction of variables.
+
+    This function tests the interaction of variables by checking if the
+    mock_interact_method is called before and after creating an instance of
+    interact.Embed with specific parameters.
+
+    Args:
+        mock_interact_method: A mock method for interaction.
+    """
+
     self.assertFalse(mock_interact_method.called)
     interact.Embed({
         'count': 10,
