@@ -22,13 +22,15 @@ from fire.console import encoding
 
 
 def GetTermSize():
-  """Gets the terminal x and y dimensions in characters.
+  """  Gets the terminal x and y dimensions in characters.
 
   _GetTermSize*() helper functions taken from:
-    http://stackoverflow.com/questions/263890/
+  http://stackoverflow.com/questions/263890/
 
   Returns:
-    (columns, lines): A tuple containing the terminal x and y dimensions.
+      tuple: A tuple containing the terminal x and y dimensions.
+          The first element represents the number of columns, and the second
+          element represents the number of lines.
   """
   xy = None
   # Believe the first helper that doesn't bail.
@@ -46,7 +48,15 @@ def GetTermSize():
 
 
 def _GetTermSizePosix():
-  """Returns the Posix terminal x and y dimensions."""
+  """  Returns the Posix terminal x and y dimensions.
+
+  This function retrieves the x and y dimensions of the Posix terminal by
+  utilizing various system libraries and methods.
+
+  Returns:
+      tuple: A tuple containing the x and y dimensions of the Posix terminal.
+          Returns None if the dimensions cannot be retrieved.
+  """
   # pylint: disable=g-import-not-at-top
   import fcntl
   # pylint: disable=g-import-not-at-top
@@ -55,13 +65,17 @@ def _GetTermSizePosix():
   import termios
 
   def _GetXY(fd):
-    """Returns the terminal (x,y) size for fd.
+    """    Returns the terminal (x,y) size for a given file descriptor.
+
+    This function takes a file descriptor as input and retrieves the
+    terminal size (x, y) associated with it.
 
     Args:
-      fd: The terminal file descriptor.
+        fd: int, The file descriptor of the terminal.
 
     Returns:
-      The terminal (x,y) size for fd or None on error.
+        tuple or None: A tuple containing the terminal size in the format (x,
+            y). Returns None on error.
     """
     try:
       # This magic incantation converts a struct from ioctl(2) containing two
@@ -86,7 +100,14 @@ def _GetTermSizePosix():
 
 
 def _GetTermSizeWindows():
-  """Returns the Windows terminal x and y dimensions."""
+  """  Returns the Windows terminal x and y dimensions.
+
+  This function retrieves the dimensions of the Windows terminal by using
+  ctypes and Windows API functions.
+
+  Returns:
+      tuple: A tuple containing the x and y dimensions of the Windows terminal.
+  """
   # pylint:disable=g-import-not-at-top
   import struct
   # pylint: disable=g-import-not-at-top
@@ -111,12 +132,23 @@ def _GetTermSizeWindows():
 
 
 def _GetTermSizeEnvironment():
-  """Returns the terminal x and y dimensions from the environment."""
+  """  Returns the terminal x and y dimensions from the environment.
+
+  Returns:
+      tuple: A tuple containing the x and y dimensions of the terminal.
+  """
   return (int(os.environ['COLUMNS']), int(os.environ['LINES']))
 
 
 def _GetTermSizeTput():
-  """Returns the terminal x and y dimensions from tput(1)."""
+  """  Returns the terminal x and y dimensions using tput(1).
+
+  This function executes the 'tput cols' and 'tput lines' commands to get
+  the number of columns and rows in the terminal.
+
+  Returns:
+      tuple: A tuple containing the number of columns and rows in the terminal.
+  """
   import subprocess  # pylint: disable=g-import-not-at-top
   output = encoding.Decode(subprocess.check_output(['tput', 'cols'],
                                                    stderr=subprocess.STDOUT))
@@ -135,11 +167,17 @@ _WINDOWS_CSI_2 = '\xe0'  # Windows control sequence indicator #2
 
 
 def GetRawKeyFunction():
-  """Returns a function that reads one keypress from stdin with no echo.
+  """  Returns a function that reads one keypress from stdin with no echo.
+
+  This function tries to obtain a function that reads one keypress from
+  stdin with no echo. It first tries to get the function from the
+  platform-specific implementations for POSIX and Windows. If both
+  platform-specific implementations fail, it returns a lambda function
+  that always returns None.
 
   Returns:
-    A function that reads one keypress from stdin with no echo or a function
-    that always returns None if stdin does not support it.
+      function: A function that reads one keypress from stdin with no echo or a function
+      that always returns None if stdin does not support it.
   """
   # Believe the first helper that doesn't bail.
   for get_raw_key_function in (_GetRawKeyFunctionPosix,
@@ -152,18 +190,26 @@ def GetRawKeyFunction():
 
 
 def _GetRawKeyFunctionPosix():
-  """_GetRawKeyFunction helper using Posix APIs."""
+  """  _GetRawKeyFunction helper using Posix APIs.
+
+  This function is a helper function that utilizes Posix APIs to read and
+  return one keypress from stdin without echoing the input.
+
+  Returns:
+      str: The key name, None for EOF, <*> for function keys, otherwise a
+          character.
+  """
   # pylint: disable=g-import-not-at-top
   import tty
   # pylint: disable=g-import-not-at-top
   import termios
 
   def _GetRawKeyPosix():
-    """Reads and returns one keypress from stdin, no echo, using Posix APIs.
+    """    Reads and returns one keypress from stdin, no echo, using Posix APIs.
 
     Returns:
-      The key name, None for EOF, <*> for function keys, otherwise a
-      character.
+        The key name, None for EOF, <*> for function keys, otherwise a
+            character.
     """
     ansi_to_key = {
         'A': '<UP-ARROW>',
@@ -186,6 +232,15 @@ def _GetRawKeyFunctionPosix():
     fd = sys.stdin.fileno()
 
     def _GetKeyChar():
+      """Get a single character key from the input.
+
+      Reads a single character key from the file descriptor and decodes it
+      using the system encoding.
+
+      Returns:
+          str: A single character key.
+      """
+
       return encoding.Decode(os.read(fd, 1))
 
     old_settings = termios.tcgetattr(fd)
@@ -215,16 +270,24 @@ def _GetRawKeyFunctionPosix():
 
 
 def _GetRawKeyFunctionWindows():
-  """_GetRawKeyFunction helper using Windows APIs."""
+  """  _GetRawKeyFunction helper using Windows APIs.
+
+  This function defines a helper function that reads and returns one
+  keypress from stdin without echo, using Windows APIs.
+
+  Returns:
+      str: The key name, None for EOF, <*> for function keys, otherwise a
+          character.
+  """
   # pylint: disable=g-import-not-at-top
   import msvcrt
 
   def _GetRawKeyWindows():
-    """Reads and returns one keypress from stdin, no echo, using Windows APIs.
+    """    Reads and returns one keypress from stdin, no echo, using Windows APIs.
 
     Returns:
-      The key name, None for EOF, <*> for function keys, otherwise a
-      character.
+        The key name, None for EOF, <*> for function keys, otherwise a
+            character.
     """
     windows_to_key = {
         'H': '<UP-ARROW>',
@@ -242,6 +305,15 @@ def _GetRawKeyFunctionWindows():
     sys.stdout.flush()
 
     def _GetKeyChar():
+      """Get a single character key pressed by the user.
+
+      This function retrieves a single character key pressed by the user using
+      msvcrt.getch() function.
+
+      Returns:
+          str: A single character key pressed by the user.
+      """
+
       return encoding.Decode(msvcrt.getch())
 
     c = _GetKeyChar()

@@ -28,7 +28,13 @@ except ImportError:
 
 
 def initialize_or_disable():
-  """Enables ANSI processing on Windows or disables it as needed."""
+  """  Enables ANSI processing on Windows or disables it as needed.
+
+  This function checks if the system has Colorama installed and then
+  enables ANSI processing on Windows if certain conditions are met.
+  Otherwise, it disables ANSI processing by setting an environment
+  variable.
+  """
   if HAS_COLORAMA:
     wrap = True
     if (hasattr(sys.stdout, "isatty")

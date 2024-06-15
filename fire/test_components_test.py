@@ -22,10 +22,26 @@ class TestComponentsTest(testutils.BaseTestCase):
   """Tests to verify that the test components are importable and okay."""
 
   def testTestComponents(self):
+    """Test the components for None values.
+
+    This function tests the components for None values using the
+    assertIsNotNone method.
+
+    Args:
+        self: An instance of the test case.
+    """
+
     self.assertIsNotNone(tc.Empty)
     self.assertIsNotNone(tc.OldStyleEmpty)
 
   def testNonComparable(self):
+    """Test the NonComparable class for comparison operations.
+
+    This function tests the NonComparable class for comparison operations.
+    It checks if the NonComparable object raises a ValueError when compared
+    using '!=' and '==' operators.
+    """
+
     with self.assertRaises(ValueError):
       tc.NonComparable() != 2  # pylint: disable=expression-not-assigned
     with self.assertRaises(ValueError):

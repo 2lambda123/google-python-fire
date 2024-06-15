@@ -24,24 +24,19 @@ import six
 
 
 def _GetSystemPath():
-  """Returns properly encoded system PATH variable string."""
+  """  Returns properly encoded system PATH variable string.
+
+  This function retrieves the system PATH variable and returns it as a
+  properly encoded string.
+
+  Returns:
+      str: The system PATH variable string.
+  """
   return encoding_util.GetEncodedValue(os.environ, 'PATH')
 
 
 def _FindExecutableOnPath(executable, path, pathext):
-  """Internal function to a find an executable.
-
-  Args:
-    executable: The name of the executable to find.
-    path: A list of directories to search separated by 'os.pathsep'.
-    pathext: An iterable of file name extensions to use.
-
-  Returns:
-    str, the path to a file on `path` with name `executable` + `p` for
-      `p` in `pathext`.
-
-  Raises:
-    ValueError: invalid input.
+  """  Internal function to find an executable on the specified path.
   """
 
   if isinstance(pathext, six.string_types):
@@ -62,6 +57,20 @@ def _FindExecutableOnPath(executable, path, pathext):
 
 
 def _PlatformExecutableExtensions(platform):
+  """Return the executable extensions based on the platform.
+
+  This function takes a platform as input and returns a tuple of
+  executable extensions based on the platform type. For Windows platform,
+  it returns ('.exe', '.cmd', '.bat', '.com', '.ps1'), and for other
+  platforms, it returns ('', '.sh').
+
+  Args:
+      platform (str): The platform type.
+
+  Returns:
+      tuple: A tuple of executable extensions based on the platform.
+  """
+
   if platform == platforms.OperatingSystem.WINDOWS:
     return ('.exe', '.cmd', '.bat', '.com', '.ps1')
   else:
@@ -70,26 +79,9 @@ def _PlatformExecutableExtensions(platform):
 
 def FindExecutableOnPath(executable, path=None, pathext=None,
                          allow_extensions=False):
-  """Searches for `executable` in the directories listed in `path` or $PATH.
+  """  Searches for `executable` in the directories listed in `path` or $PATH.
 
   Executable must not contain a directory or an extension.
-
-  Args:
-    executable: The name of the executable to find.
-    path: A list of directories to search separated by 'os.pathsep'.  If None
-      then the system PATH is used.
-    pathext: An iterable of file name extensions to use.  If None then
-      platform specific extensions are used.
-    allow_extensions: A boolean flag indicating whether extensions in the
-      executable are allowed.
-
-  Returns:
-    The path of 'executable' (possibly with a platform-specific extension) if
-    found and executable, None if not found.
-
-  Raises:
-    ValueError: if executable has a path or an extension, and extensions are
-      not allowed, or if there's an internal error.
   """
 
   if not allow_extensions and os.path.splitext(executable)[1]:

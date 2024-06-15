@@ -27,18 +27,21 @@ from fire.console import files
 
 
 def IsInteractive(output=False, error=False, heuristic=False):
-  """Determines if the current terminal session is interactive.
+  """  Determines if the current terminal session is interactive.
 
-  sys.stdin must be a terminal input stream.
+  This function checks if the current terminal session is interactive by
+  examining the terminal input stream. Optionally, it can also check if
+  the terminal output streams are interactive based on the provided
+  arguments.
 
   Args:
-    output: If True then sys.stdout must also be a terminal output stream.
-    error: If True then sys.stderr must also be a terminal output stream.
-    heuristic: If True then we also do some additional heuristics to check if
-               we are in an interactive context. Checking home path for example.
+      output (bool): If True, sys.stdout must also be a terminal output stream.
+      error (bool): If True, sys.stderr must also be a terminal output stream.
+      heuristic (bool): If True, additional heuristics are applied to determine interactivity,
+          such as checking the home path.
 
   Returns:
-    True if the current terminal session is interactive.
+      bool: True if the current terminal session is interactive, False otherwise.
   """
   if not sys.stdin.isatty():
     return False
@@ -66,13 +69,19 @@ def IsInteractive(output=False, error=False, heuristic=False):
 
 
 def More(contents, out, prompt=None, check_pager=True):
-  """Run a user specified pager or fall back to the internal pager.
+  """  Run a user specified pager or fall back to the internal pager.
+
+  This function takes the contents of text lines to page and outputs them
+  to the specified stream. If the output is not interactive, it directly
+  writes the contents to the output stream. If check_pager is True, it
+  checks the PAGER environment variable and uses it if available. If no
+  pager is found, it falls back to the internal pager.
 
   Args:
-    contents: The entire contents of the text lines to page.
-    out: The output stream.
-    prompt: The page break prompt.
-    check_pager: Checks the PAGER env var and uses it if True.
+      contents (str): The entire contents of the text lines to page.
+      out: The output stream.
+      prompt (str): The page break prompt.
+      check_pager (bool): Checks the PAGER env var and uses it if True.
   """
   if not IsInteractive(output=True):
     out.write(contents)

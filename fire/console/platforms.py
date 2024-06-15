@@ -56,39 +56,140 @@ class OperatingSystem(object):
       self.file_name = file_name
 
     def __str__(self):
+      """Return the string representation of the object's id.
+
+      This method returns the string representation of the object's id
+      attribute.
+
+      Returns:
+          str: The string representation of the object's id.
+      """
+
       return self.id
 
     def __eq__(self, other):
+      """Check if two objects are equal based on their id, name, and file_name
+      attributes.
+
+      Args:
+          other (object): The object to compare with.
+
+      Returns:
+          bool: True if the objects are equal, False otherwise.
+      """
+
       return (isinstance(other, type(self)) and
               self.id == other.id and
               self.name == other.name and
               self.file_name == other.file_name)
 
     def __hash__(self):
+      """Return the hash value of the object based on its id, name, and file_name
+      attributes.
+
+      This method calculates the hash value by summing the hash values of the
+      id, name, and file_name attributes.
+
+      Returns:
+          int: The hash value of the object.
+      """
+
       return hash(self.id) + hash(self.name) + hash(self.file_name)
 
     def __ne__(self, other):
+      """Check if two objects are not equal.
+
+      This method checks if the current object is not equal to the other
+      object by using the __eq__ method.
+
+      Args:
+          self: The current object.
+          other: The other object to compare with.
+
+      Returns:
+          bool: True if the objects are not equal, False otherwise.
+      """
+
       return not self == other
 
     @classmethod
     def _CmpHelper(cls, x, y):
-      """Just a helper equivalent to the cmp() function in Python 2."""
+      """      Just a helper equivalent to the cmp() function in Python 2.
+
+      Args:
+          cls: Class instance.
+          x: First value for comparison.
+          y: Second value for comparison.
+
+      Returns:
+          int: Returns -1 if x < y, 0 if x == y, and 1 if x > y.
+      """
       return (x > y) - (x < y)
 
     def __lt__(self, other):
+      """Compare this object with another object based on id, name, and file_name
+      attributes.
+
+      Args:
+          self (object): The current object.
+          other (object): The object to compare with.
+
+      Returns:
+          bool: True if the current object is less than the other object, False
+              otherwise.
+      """
+
       return self._CmpHelper(
           (self.id, self.name, self.file_name),
           (other.id, other.name, other.file_name)) < 0
 
     def __gt__(self, other):
+      """Compares the current object with another object based on id, name, and
+      file_name attributes.
+
+      Args:
+          self: An instance of the class.
+          other: Another instance of the class to compare with.
+
+      Returns:
+          bool: True if the current object is greater than the other object, False
+              otherwise.
+      """
+
       return self._CmpHelper(
           (self.id, self.name, self.file_name),
           (other.id, other.name, other.file_name)) > 0
 
     def __le__(self, other):
+      """Returns True if the object is less than or equal to the 'other' object.
+
+      This method is used to implement the less than or equal to comparison
+      operator (<=) for custom objects.
+
+      Args:
+          self: The current object.
+          other: The object to compare against.
+
+      Returns:
+          bool: True if the current object is less than or equal to the 'other' object,
+              False otherwise.
+      """
+
       return not self.__gt__(other)
 
     def __ge__(self, other):
+      """Special method to determine if the object is greater than or equal to
+      another object.
+
+      Args:
+          self: The first object to compare.
+          other: The second object to compare.
+
+      Returns:
+          bool: True if the first object is greater than or equal to the second object,
+              False otherwise.
+      """
+
       return not self.__lt__(other)
 
   WINDOWS = _OS('WINDOWS', 'Windows', 'windows')
@@ -100,28 +201,16 @@ class OperatingSystem(object):
 
   @staticmethod
   def AllValues():
-    """Gets all possible enum values.
+    """    Gets all possible enum values.
 
     Returns:
-      list, All the enum values.
+        list: All the enum values.
     """
     return list(OperatingSystem._ALL)
 
   @staticmethod
   def FromId(os_id, error_on_unknown=True):
-    """Gets the enum corresponding to the given operating system id.
-
-    Args:
-      os_id: str, The operating system id to parse
-      error_on_unknown: bool, True to raise an exception if the id is unknown,
-        False to just return None.
-
-    Raises:
-      InvalidEnumValue: If the given value cannot be parsed.
-
-    Returns:
-      OperatingSystemTuple, One of the OperatingSystem constants or None if the
-      input is None.
+    """    Gets the enum corresponding to the given operating system id.
     """
     if not os_id:
       return None
@@ -135,11 +224,10 @@ class OperatingSystem(object):
 
   @staticmethod
   def Current():
-    """Determines the current operating system.
+    """    Determines the current operating system.
 
     Returns:
-      OperatingSystemTuple, One of the OperatingSystem constants or None if it
-      cannot be determined.
+        OperatingSystemTuple: One of the OperatingSystem constants or None if it cannot be determined.
     """
     if os.name == 'nt':
       return OperatingSystem.WINDOWS
@@ -153,7 +241,11 @@ class OperatingSystem(object):
 
   @staticmethod
   def IsWindows():
-    """Returns True if the current operating system is Windows."""
+    """    Returns True if the current operating system is Windows.
+
+    Returns:
+        bool: True if the current operating system is Windows, False otherwise.
+    """
     return OperatingSystem.Current() is OperatingSystem.WINDOWS
 
 
@@ -170,39 +262,135 @@ class Architecture(object):
       self.file_name = file_name
 
     def __str__(self):
+      """Return the string representation of the object's id.
+
+      Returns:
+          str: The string representation of the object's id.
+      """
+
       return self.id
 
     def __eq__(self, other):
+      """Compare if two objects are equal based on their id, name, and file_name
+      attributes.
+
+      Args:
+          other (object): The object to compare with.
+
+      Returns:
+          bool: True if the objects are equal, False otherwise.
+      """
+
       return (isinstance(other, type(self)) and
               self.id == other.id and
               self.name == other.name and
               self.file_name == other.file_name)
 
     def __hash__(self):
+      """Return the hash value of the object based on its id, name, and file
+      name.
+
+      This method calculates the hash value by summing the hash values of the
+      id, name, and file name attributes.
+
+      Returns:
+          int: The hash value of the object.
+      """
+
       return hash(self.id) + hash(self.name) + hash(self.file_name)
 
     def __ne__(self, other):
+      """Check if two objects are not equal.
+
+      This method overrides the '!=' operator to check if two objects are not
+      equal.
+
+      Args:
+          self: The first object to compare.
+          other: The second object to compare.
+
+      Returns:
+          bool: True if the two objects are not equal, False otherwise.
+      """
+
       return not self == other
 
     @classmethod
     def _CmpHelper(cls, x, y):
-      """Just a helper equivalent to the cmp() function in Python 2."""
+      """      Just a helper equivalent to the cmp() function in Python 2.
+
+      Args:
+          cls: The class instance.
+          x: The first value for comparison.
+          y: The second value for comparison.
+
+      Returns:
+          int: Returns -1 if x < y, 0 if x == y, and 1 if x > y.
+      """
       return (x > y) - (x < y)
 
     def __lt__(self, other):
+      """Compares the current object with another object based on id, name, and
+      file_name attributes.
+
+      Args:
+          self (object): The current object.
+          other (object): The other object to compare with.
+
+      Returns:
+          bool: True if the current object is less than the other object, False
+              otherwise.
+      """
+
       return self._CmpHelper(
           (self.id, self.name, self.file_name),
           (other.id, other.name, other.file_name)) < 0
 
     def __gt__(self, other):
+      """Compares the current object with another object based on the id, name,
+      and file_name attributes.
+
+      Args:
+          self: An instance of the class.
+          other: Another instance of the class to compare with.
+
+      Returns:
+          bool: True if the current object is greater than the other object, False
+              otherwise.
+      """
+
       return self._CmpHelper(
           (self.id, self.name, self.file_name),
           (other.id, other.name, other.file_name)) > 0
 
     def __le__(self, other):
+      """Returns True if the object is less than or equal to the 'other' object.
+
+      This method is used to implement the less than or equal to comparison
+      operation.
+
+      Args:
+          self: The object on which the method is called.
+          other: The object to compare with.
+
+      Returns:
+          bool: True if the object is less than or equal to 'other', False otherwise.
+      """
+
       return not self.__gt__(other)
 
     def __ge__(self, other):
+      """Special method to implement the greater than or equal to (>=) comparison
+      for custom objects.
+
+      Args:
+          self: The instance of the custom object.
+          other: The object to compare against.
+
+      Returns:
+          bool: True if self is greater than or equal to other, False otherwise.
+      """
+
       return not self.__lt__(other)
 
   x86 = _ARCH('x86', 'x86', 'x86')
@@ -222,28 +410,19 @@ class Architecture(object):
 
   @staticmethod
   def AllValues():
-    """Gets all possible enum values.
+    """    Gets all possible enum values.
 
     Returns:
-      list, All the enum values.
+        list: All the enum values.
     """
     return list(Architecture._ALL)
 
   @staticmethod
   def FromId(architecture_id, error_on_unknown=True):
-    """Gets the enum corresponding to the given architecture id.
+    """    Gets the enum corresponding to the given architecture id.
 
-    Args:
-      architecture_id: str, The architecture id to parse
-      error_on_unknown: bool, True to raise an exception if the id is unknown,
-        False to just return None.
-
-    Raises:
-      InvalidEnumValue: If the given value cannot be parsed.
-
-    Returns:
-      ArchitectureTuple, One of the Architecture constants or None if the input
-      is None.
+    This function takes an architecture id as input and returns the
+    corresponding ArchitectureTuple.
     """
     if not architecture_id:
       return None
@@ -257,11 +436,10 @@ class Architecture(object):
 
   @staticmethod
   def Current():
-    """Determines the current system architecture.
+    """    Determines the current system architecture.
 
     Returns:
-      ArchitectureTuple, One of the Architecture constants or None if it cannot
-      be determined.
+        ArchitectureTuple: One of the Architecture constants or None if it cannot be determined.
     """
     return Architecture._MACHINE_TO_ARCHITECTURE.get(platform.machine().lower())
 
@@ -280,35 +458,49 @@ class Platform(object):
     self.architecture = architecture
 
   def __str__(self):
+    """Return a string representation of the object.
+
+    Returns a formatted string containing the operating system and
+    architecture of the object.
+
+    Returns:
+        str: A string representation of the object in the format 'operating_system-
+            architecture'.
+    """
+
     return '{}-{}'.format(self.operating_system, self.architecture)
 
   @staticmethod
   def Current(os_override=None, arch_override=None):
-    """Determines the current platform you are running on.
+    """    Determines the current platform you are running on.
 
     Args:
-      os_override: OperatingSystem, A value to use instead of the current.
-      arch_override: Architecture, A value to use instead of the current.
+        os_override (OperatingSystem): A value to use instead of the current operating system.
+        arch_override (Architecture): A value to use instead of the current architecture.
 
     Returns:
-      Platform, The platform tuple of operating system and architecture.  Either
-      can be None if it could not be determined.
+        Platform: The platform tuple of operating system and architecture. Either can be
+            None if it could not be determined.
     """
     return Platform(
         os_override if os_override else OperatingSystem.Current(),
         arch_override if arch_override else Architecture.Current())
 
   def UserAgentFragment(self):
-    """Generates the fragment of the User-Agent that represents the OS.
+    """    Generates the fragment of the User-Agent that represents the OS.
 
-    Examples:
-      (Linux 3.2.5-gg1236)
-      (Windows NT 6.1.7601)
-      (Macintosh; PPC Mac OS X 12.4.0)
-      (Macintosh; Intel Mac OS X 12.4.0)
+    This function generates a fragment of the User-Agent string based on the
+    operating system. It provides examples of the generated fragments for
+    different operating systems.
 
     Returns:
-      str, The fragment of the User-Agent string.
+        str: The fragment of the User-Agent string.
+
+    Examples:
+        (Linux 3.2.5-gg1236)
+        - (Windows NT 6.1.7601)
+        - (Macintosh; PPC Mac OS X 12.4.0)
+        - (Macintosh; Intel Mac OS X 12.4.0)
     """
     # Below, there are examples of the value of platform.uname() per platform.
     # platform.release() is uname[2], platform.version() is uname[3].
@@ -335,23 +527,20 @@ class Platform(object):
       return '()'
 
   def AsyncPopenArgs(self):
-    """Returns the args for spawning an async process using Popen on this OS.
+    """    Returns the arguments for spawning an asynchronous process using Popen
+    on this OS.
 
-    Make sure the main process does not wait for the new process. On windows
-    this means setting the 0x8 creation flag to detach the process.
-
-    Killing a group leader kills the whole group. Setting creation flag 0x200 on
-    Windows or running setsid on *nix makes sure the new process is in a new
-    session with the new process the group leader. This means it can't be killed
-    if the parent is killed.
-
-    Finally, all file descriptors (FD) need to be closed so that waiting for the
-    output of the main process does not inadvertently wait for the output of the
-    new process, which means waiting for the termination of the new process.
-    If the new process wants to write to a file, it can open new FDs.
+    This method determines the arguments required to spawn an asynchronous
+    process using Popen based on the operating system. For Windows, it
+    ensures that the main process does not wait for the new process by
+    detaching it. It also closes all file descriptors to prevent inadvertent
+    waiting for the new process output. On Unix-like systems, it sets up a
+    new session with the new process as the group leader to prevent
+    termination if the parent process is killed.
 
     Returns:
-      {str:}, The args for spawning an async process using Popen on this OS.
+        dict: The arguments for spawning an asynchronous process using Popen on this
+            OS.
     """
     args = {}
     if self.operating_system == OperatingSystem.WINDOWS:
@@ -401,6 +590,17 @@ the CLOUDSDK_PYTHON environment variable to point to it.
       self.version = None
 
   def SupportedVersionMessage(self, allow_py3):
+    """Generate a message indicating the supported Python versions.
+
+    This function generates a message based on the allowed Python versions.
+
+    Args:
+        allow_py3 (bool): A boolean indicating whether Python 3 is allowed.
+
+    Returns:
+        str: A message indicating the supported Python versions.
+    """
+
     if allow_py3:
       return 'Please use Python version {0}.{1}.x or {2}.{3} and up.'.format(
           PythonVersion.MIN_SUPPORTED_PY2_VERSION[0],
@@ -413,24 +613,11 @@ the CLOUDSDK_PYTHON environment variable to point to it.
           PythonVersion.MIN_SUPPORTED_PY2_VERSION[1])
 
   def IsCompatible(self, allow_py3=False, raise_exception=False):
-    """Ensure that the Python version we are using is compatible.
+    """    Ensure that the Python version is compatible for the Google Cloud SDK.
 
-    This will print an error message if not compatible.
-
-    Compatible versions are 2.6 and 2.7 and > 3.4 if allow_py3 is True.
-    We don't guarantee support for 2.6 so we want to warn about it.
-
-    Args:
-      allow_py3: bool, True if we should allow a Python 3 interpreter to run
-        gcloud. If False, this returns an error for Python 3.
-      raise_exception: bool, True to raise an exception rather than printing
-        the error and exiting.
-
-    Raises:
-      Error: If not compatible and raise_exception is True.
-
-    Returns:
-      bool, True if the version is valid, False otherwise.
+    This method checks if the current Python version is compatible with the
+    Google Cloud SDK. It prints an error message if the version is not
+    compatible.
     """
     error = None
     if not self.version:

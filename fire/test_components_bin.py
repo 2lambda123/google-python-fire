@@ -22,6 +22,12 @@ from fire import test_components
 
 
 def main():
+  """Entry point for the program.
+
+  This function uses the Fire library to automatically generate a command
+  line interface for the test_components function.
+  """
+
   fire.Fire(test_components)
 
 if __name__ == '__main__':
