@@ -23,24 +23,42 @@ import six
 
 
 def Script(name, component, default_options=None, shell='bash'):
+  """Generate a script based on the specified shell.
+
+  This function generates a script based on the specified shell (bash or
+  fish).
+
+  Args:
+      name (str): The name of the script.
+      component (str): The component to be included in the script.
+      default_options (dict?): Default options for the script. Defaults to None.
+      shell (str?): The shell to use for the script. Defaults to 'bash'.
+
+  Returns:
+      _FishScript or _BashScript: An instance of _FishScript if shell is
+          'fish', else an instance of _BashScript.
+  """
+
   if shell == 'fish':
     return _FishScript(name, _Commands(component), default_options)
   return _BashScript(name, _Commands(component), default_options)
 
 
 def _BashScript(name, commands, default_options=None):
-  """Returns a Bash script registering a completion function for the commands.
+  """  Returns a Bash script registering a completion function for the
+  commands.
 
   Args:
-    name: The first token in the commands, also the name of the command.
-    commands: A list of all possible commands that tab completion can complete
-        to. Each command is a list or tuple of the string tokens that make up
-        that command.
-    default_options: A dict of options that can be used with any command. Use
-        this if there are flags that can always be appended to a command.
+      name (str): The first token in the commands, also the name of the command.
+      commands (list): A list of all possible commands that tab completion can complete to.
+          Each command is a list or tuple of the string tokens that make up that
+          command.
+      default_options (set?): A set of options that can be used with any command. Use this if there
+          are flags that can always be appended to a command. Defaults to None.
+
   Returns:
-    A string which is the Bash script. Source the bash script to enable tab
-    completion in Bash.
+      str: A string which is the Bash script. Source the bash script to enable tab
+          completion in Bash.
   """
   default_options = default_options or set()
   global_options, options_map, subcommands_map = _GetMaps(
@@ -146,6 +164,19 @@ complete -F _complete-{identifier} {command}
       opts="{options} ${{GLOBAL_OPTIONS}}" """
 
   def _GetOptsAssignmentTemplate(command):
+    """Determine the appropriate options assignment template based on the
+    command.
+
+    This function takes a command as input and returns the corresponding
+    options assignment template.
+
+    Args:
+        command (str): The command for which the template is needed.
+
+    Returns:
+        str: The options assignment template based on the command.
+    """
+
     if command == name:
       return opts_assignment_main_command_template
     else:
@@ -186,18 +217,25 @@ complete -F _complete-{identifier} {command}
 
 
 def _FishScript(name, commands, default_options=None):
-  """Returns a Fish script registering a completion function for the commands.
+  """  Returns a Fish script registering a completion function for the
+  commands.
+
+  This function takes in the name of the command, a list of possible
+  commands for tab completion, and optional default options. It then
+  generates a Fish script that can be sourced to enable tab completion in
+  Fish.
 
   Args:
-    name: The first token in the commands, also the name of the command.
-    commands: A list of all possible commands that tab completion can complete
-        to. Each command is a list or tuple of the string tokens that make up
-        that command.
-    default_options: A dict of options that can be used with any command. Use
-        this if there are flags that can always be appended to a command.
+      name (str): The first token in the commands, also the name of the command.
+      commands (list): A list of all possible commands that tab completion can complete to.
+          Each command is a list or tuple of the string tokens that make up that
+          command.
+      default_options (dict?): A dict of options that can be used with any command.
+          Use this if there are flags that can always be appended to a command.
+
   Returns:
-    A string which is the Fish script. Source the fish script to enable tab
-    completion in Fish.
+      str: A string which is the Fish script. Source the fish script to enable tab
+          completion in Fish.
   """
   default_options = default_options or set()
   global_options, options_map, subcommands_map = _GetMaps(
@@ -282,27 +320,27 @@ end
 
 
 def MemberVisible(component, name, member, class_attrs=None, verbose=False):
-  """Returns whether a member should be included in auto-completion or help.
+  """  Returns whether a member should be included in auto-completion or help.
 
-  Determines whether a member of an object with the specified name should be
-  included in auto-completion or help text(both usage and detailed help).
-
-  If the member name starts with '__', it will always be excluded. If it
-  starts with only one '_', it will be included for all non-string types. If
-  verbose is True, the members, including the private members, are included.
-
-  When not in verbose mode, some modules and functions are excluded as well.
+  Determines whether a member of an object with the specified name should
+  be included in auto-completion or help text(both usage and detailed
+  help).  If the member name starts with '__', it will always be excluded.
+  If it starts with only one '_', it will be included for all non-string
+  types. If verbose is True, the members, including the private members,
+  are included.  When not in verbose mode, some modules and functions are
+  excluded as well.
 
   Args:
-    component: The component containing the member.
-    name: The name of the member.
-    member: The member itself.
-    class_attrs: (optional) If component is a class, provide this as:
-      inspectutils.GetClassAttrsDict(component). If not provided, it will be
-      computed.
-    verbose: Whether to include private members.
-  Returns
-    A boolean value indicating whether the member should be included.
+      component: The component containing the member.
+      name: The name of the member.
+      member: The member itself.
+      class_attrs: (optional) If component is a class, provide this as:
+          inspectutils.GetClassAttrsDict(component). If not provided, it will be
+          computed.
+      verbose: Whether to include private members.
+
+  Returns:
+      bool: A boolean value indicating whether the member should be included.
   """
   if isinstance(name, six.string_types) and name.startswith('__'):
     return False
@@ -345,22 +383,26 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
 
 
 def VisibleMembers(component, class_attrs=None, verbose=False):
-  """Returns a list of the members of the given component.
+  """  Returns a list of members of the given component.
 
-  If verbose is True, then members starting with _ (normally ignored) are
+  If verbose is True, members starting with _ (normally ignored) are
   included.
 
   Args:
-    component: The component whose members to list.
-    class_attrs: (optional) If component is a class, you may provide this as:
-      inspectutils.GetClassAttrsDict(component). If not provided, it will be
-      computed. If provided, this determines how class members will be treated
-      for visibility. In particular, methods are generally hidden for
-      non-instantiated classes, but if you wish them to be shown (e.g. for
-      completion scripts) then pass in a different class_attr for them.
-    verbose: Whether to include private members.
+      component: The component whose members to list.
+      class_attrs: (optional) If component is a class, you may provide this as:
+          inspectutils.GetClassAttrsDict(component). If not provided, it will be
+          computed.
+          If provided, this determines how class members will be treated for
+          visibility.
+          In particular, methods are generally hidden for non-instantiated
+          classes,
+          but if you wish them to be shown (e.g. for completion scripts) then pass
+          in a different class_attr for them.
+      verbose: Whether to include private members.
+
   Returns:
-    A list of tuples (member_name, member) of all members of the component.
+      list: A list of tuples (member_name, member) of all members of the component.
   """
   if isinstance(component, dict):
     members = component.items()
@@ -378,12 +420,18 @@ def VisibleMembers(component, class_attrs=None, verbose=False):
 
 
 def _CompletionsFromArgs(fn_args):
-  """Takes a list of fn args and returns a list of the fn's completion strings.
+  """  Takes a list of function arguments and returns a list of completion
+  strings.
+
+  It iterates through the list of function arguments, replaces underscores
+  with hyphens, and appends '--' to each argument to create completion
+  strings.
 
   Args:
-    fn_args: A list of the args accepted by a function.
+      fn_args (list): A list of arguments accepted by a function.
+
   Returns:
-    A list of possible completion strings for that function.
+      list: A list of possible completion strings for the function.
   """
   completions = []
   for arg in fn_args:
@@ -393,16 +441,18 @@ def _CompletionsFromArgs(fn_args):
 
 
 def Completions(component, verbose=False):
-  """Gives possible Fire command completions for the component.
+  """  Gives possible Fire command completions for the component.
 
-  A completion is a string that can be appended to a command to continue that
-  command. These are used for TAB-completions in Bash for Fire CLIs.
+  A completion is a string that can be appended to a command to continue
+  that command. These are used for TAB-completions in Bash for Fire CLIs.
 
   Args:
-    component: The component whose completions to list.
-    verbose: Whether to include all completions, even private members.
+      component: The component whose completions to list.
+      verbose: Whether to include all completions, even private members.
+
   Returns:
-    A list of completions for a command that would so far return the component.
+      list: A list of completions for a command that would so far return the
+          component.
   """
   if inspect.isroutine(component) or inspect.isclass(component):
     spec = inspectutils.GetFullArgSpec(component)
@@ -422,17 +472,21 @@ def Completions(component, verbose=False):
 
 
 def _FormatForCommand(token):
-  """Replaces underscores with hyphens, unless the token starts with a token.
+  """  Replaces underscores with hyphens, unless the token starts with a token.
 
-  This is because we typically prefer hyphens to underscores at the command
-  line, but we reserve hyphens at the start of a token for flags. This becomes
-  relevant when --verbose is activated, so that things like __str__ don't get
-  transformed into --str--, which would get confused for a flag.
+  This function replaces underscores with hyphens in the given token,
+  unless the token starts with an underscore. This is done to ensure that
+  at the command line, hyphens are preferred over underscores, but
+  underscores at the start of a token are reserved for flags. This
+  distinction is important when dealing with command line arguments,
+  especially when --verbose is activated, to avoid confusion between flags
+  and other tokens.
 
   Args:
-    token: The token to transform.
+      token (str or object): The token to transform.
+
   Returns:
-    The transformed token.
+      str: The transformed token.
   """
   if not isinstance(token, six.string_types):
     token = str(token)
@@ -444,18 +498,20 @@ def _FormatForCommand(token):
 
 
 def _Commands(component, depth=3):
-  """Yields tuples representing commands.
+  """  Yields tuples representing commands.
 
-  To use the command from Python, insert '.' between each element of the tuple.
-  To use the command from the command line, insert ' ' between each element of
-  the tuple.
+  To use the command from Python, insert '.' between each element of the
+  tuple. To use the command from the command line, insert ' ' between each
+  element of the tuple.
 
   Args:
-    component: The component considered to be the root of the yielded commands.
-    depth: The maximum depth with which to traverse the member DAG for commands.
+      component: The component considered to be the root of the yielded commands.
+      depth: The maximum depth with which to traverse the member DAG for commands.
+
+
   Yields:
-    Tuples, each tuple representing one possible command for this CLI.
-    Only traverses the member DAG up to a depth of depth.
+      tuple: Tuples, each tuple representing one possible command for this CLI.
+      Only traverses the member DAG up to a depth of depth.
   """
   if inspect.isroutine(component) or inspect.isclass(component):
     for completion in Completions(component, verbose=False):
@@ -479,24 +535,45 @@ def _Commands(component, depth=3):
 
 
 def _IsOption(arg):
+  """Check if the input argument is an option.
+
+  This function takes a string argument and checks if it starts with a
+  hyphen, indicating it is an option.
+
+  Args:
+      arg (str): The input argument to be checked.
+
+  Returns:
+      bool: True if the argument starts with a hyphen, False otherwise.
+  """
+
   return arg.startswith('-')
 
 
 def _GetMaps(name, commands, default_options):
-  """Returns sets of subcommands and options for each command.
+  """  Returns sets of subcommands and options for each command.
+
+  This function takes the name of the command, a list of all possible
+  commands that tab completion can complete to, and a dictionary of
+  default options that can be used with any command. It then processes
+  these inputs to generate sets of global options, subcommands, and
+  options for each subcommand.
 
   Args:
-    name: The first token in the commands, also the name of the command.
-    commands: A list of all possible commands that tab completion can complete
-        to. Each command is a list or tuple of the string tokens that make up
-        that command.
-    default_options: A dict of options that can be used with any command. Use
-        this if there are flags that can always be appended to a command.
+      name (str): The first token in the commands, also the name of the command.
+      commands (list): A list of all possible commands that tab completion can complete to.
+          Each command is a list or
+          tuple of the string tokens that make up that command.
+      default_options (dict): A dictionary of options that can be used with any command. Use this if
+          there are flags
+          that can always be appended to a command.
+
   Returns:
-    global_options: A set of all options of the first token of the command.
-    subcommands_map: A dict storing set of subcommands for each
-        command/subcommand.
-    options_map: A dict storing set of options for each subcommand.
+      tuple: A tuple containing:
+          set: A set of all options of the first token of the command.
+          dict: A dictionary storing sets of options for each subcommand.
+          dict: A dictionary storing sets of subcommands for each
+          command/subcommand.
   """
   global_options = copy.copy(default_options)
   options_map = collections.defaultdict(lambda: copy.copy(default_options))
