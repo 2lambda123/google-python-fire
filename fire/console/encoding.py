@@ -22,14 +22,14 @@ import six
 
 
 def Encode(string, encoding=None):
-  """Encode the text string to a byte string.
+  """  Encode the text string to a byte string.
 
   Args:
-    string: str, The text string to encode.
-    encoding: The suggested encoding if known.
+      string (str): The text string to encode.
+      encoding (str?): The suggested encoding if known.
 
   Returns:
-    str, The binary string.
+      str: The binary string.
   """
   if string is None:
     return None
@@ -46,18 +46,18 @@ def Encode(string, encoding=None):
 
 
 def Decode(data, encoding=None):
-  """Returns string with non-ascii characters decoded to UNICODE.
+  """  Returns string with non-ascii characters decoded to UNICODE.
 
-  UTF-8, the suggested encoding, and the usual suspects will be attempted in
-  order.
+  UTF-8, the suggested encoding, and the usual suspects will be attempted
+  in order.
 
   Args:
-    data: A string or object that has str() and unicode() methods that may
-      contain an encoding incompatible with the standard output encoding.
-    encoding: The suggested encoding if known.
+      data: A string or object that has str() and unicode() methods that may
+          contain an encoding incompatible with the standard output encoding.
+      encoding: The suggested encoding if known.
 
   Returns:
-    A text string representing the decoded byte string.
+      A text string representing the decoded byte string.
   """
   if data is None:
     return None
@@ -137,15 +137,15 @@ def Decode(data, encoding=None):
 
 
 def GetEncodedValue(env, name, default=None):
-  """Returns the decoded value of the env var name.
+  """  Returns the decoded value of the environment variable 'name'.
 
   Args:
-    env: {str: str}, The env dict.
-    name: str, The env var name.
-    default: The value to return if name is not in env.
+      env (dict): The dictionary containing environment variables.
+      name (str): The name of the environment variable.
+      default: The value to return if 'name' is not found in 'env'.
 
   Returns:
-    The decoded value of the env var name.
+      The decoded value of the environment variable 'name'.
   """
   name = Encode(name)
   value = env.get(name)
@@ -157,14 +157,26 @@ def GetEncodedValue(env, name, default=None):
 
 
 def SetEncodedValue(env, name, value, encoding=None):
-  """Sets the value of name in env to an encoded value.
+  """  Sets the value of a given name in the environment dictionary to an
+  encoded value.
 
   Args:
-    env: {str: str}, The env dict.
-    name: str, The env var name.
-    value: str or unicode, The value for name. If None then name is removed from
-      env.
-    encoding: str, The encoding to use or None to try to infer it.
+      env (dict): The environment dictionary.
+      name (str): The name of the environment variable.
+      value (str or unicode): The value to be set for the given name. If None, the name is removed
+          from the environment.
+      encoding (str): The encoding to be used. If None, the encoding will be inferred.
+
+
+  Notes:
+      Python 2 and 3 have different unicode support for filesystem paths and
+      environment boundaries.
+      - The encoding used for filesystem paths and environment variable
+      names/values is often user-controlled.
+      - The function encodes values based on hints from
+      sys.getfilesystemencoding() or sys.getdefaultencoding().
+      - Encoded values are set in the environment to avoid Unicode exceptions
+      in the os module.
   """
   # Python 2 *and* 3 unicode support falls apart at filesystem/argv/environment
   # boundaries. The encoding used for filesystem paths and environment variable
@@ -183,14 +195,19 @@ def SetEncodedValue(env, name, value, encoding=None):
 
 
 def EncodeEnv(env, encoding=None):
-  """Encodes all the key value pairs in env in preparation for subprocess.
+  """  Encodes all the key value pairs in env in preparation for subprocess.
+
+  This function encodes all the key-value pairs in the 'env' dictionary
+  using the specified encoding or the default encoding if none is
+  provided. It returns a new dictionary with keys and values encoded as
+  bytes.
 
   Args:
-    env: {str: str}, The environment you are going to pass to subprocess.
-    encoding: str, The encoding to use or None to use the default.
+      env (dict): The environment dictionary to be encoded.
+      encoding (str): The encoding to use. Defaults to None.
 
   Returns:
-    {bytes: bytes}, The environment to pass to subprocess.
+      dict: A new dictionary with keys and values encoded as bytes.
   """
   encoding = encoding or _GetEncoding()
   return {
@@ -199,5 +216,9 @@ def EncodeEnv(env, encoding=None):
 
 
 def _GetEncoding():
-  """Gets the default encoding to use."""
+  """  Gets the default encoding to use.
+
+  Returns:
+      str: The default encoding to use.
+  """
   return sys.getfilesystemencoding() or sys.getdefaultencoding()
