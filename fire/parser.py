@@ -19,6 +19,13 @@ import ast
 
 
 def CreateParser():
+  """Create an argument parser with custom options for a command-line
+  utility.
+
+  Returns:
+      argparse.ArgumentParser: An argument parser object with custom options.
+  """
+
   parser = argparse.ArgumentParser(add_help=False)
   parser.add_argument('--verbose', '-v', action='store_true')
   parser.add_argument('--interactive', '-i', action='store_true')
@@ -31,16 +38,17 @@ def CreateParser():
 
 
 def SeparateFlagArgs(args):
-  """Splits a list of args into those for Flags and those for Fire.
+  """  Splits a list of args into those for Flags and those for Fire.
 
-  If an isolated '--' arg is not present in the arg list, then all of the args
-  are for Fire. If there is an isolated '--', then the args after the final '--'
-  are flag args, and the rest of the args are fire args.
+  If an isolated '--' arg is not present in the arg list, then all of the
+  args are for Fire. If there is an isolated '--', then the args after the
+  final '--' are flag args, and the rest of the args are fire args.
 
   Args:
-    args: The list of arguments received by the Fire command.
+      args (list): The list of arguments received by the Fire command.
+
   Returns:
-    A tuple with the Fire args (a list), followed by the Flag args (a list).
+      tuple: A tuple with the Fire args (a list), followed by the Flag args (a list).
   """
   if '--' in args:
     separator_index = len(args) - 1 - args[::-1].index('--')  # index of last --
@@ -51,16 +59,18 @@ def SeparateFlagArgs(args):
 
 
 def DefaultParseValue(value):
-  """The default argument parsing function used by Fire CLIs.
+  """  The default argument parsing function used by Fire CLIs.
 
-  If the value is made of only Python literals and containers, then the value
-  is parsed as it's Python value. Otherwise, provided the value contains no
-  quote, escape, or parenthetical characters, the value is treated as a string.
+  If the value is made of only Python literals and containers, then the
+  value is parsed as its Python value. Otherwise, provided the value
+  contains no quote, escape, or parenthetical characters, the value is
+  treated as a string.
 
   Args:
-    value: A string from the command line to be parsed for use in a Fire CLI.
+      value (str): A string from the command line to be parsed for use in a Fire CLI.
+
   Returns:
-    The parsed value, of the type determined most appropriate.
+      The parsed value, of the type determined most appropriate.
   """
   # Note: _LiteralEval will treat '#' as the start of a comment.
   try:
@@ -71,23 +81,13 @@ def DefaultParseValue(value):
 
 
 def _LiteralEval(value):
-  """Parse value as a Python literal, or container of containers and literals.
+  """  Parse value as a Python literal, or container of containers and
+  literals.
 
   First the AST of the value is updated so that bare-words are turned into
-  strings. Then the resulting AST is evaluated as a literal or container of
-  only containers and literals.
-
-  This allows for the YAML-like syntax {a: b} to represent the dict {'a': 'b'}
-
-  Args:
-    value: A string to be parsed as a literal or container of containers and
-      literals.
-  Returns:
-    The Python value representing the value arg.
-  Raises:
-    ValueError: If the value is not an expression with only containers and
-      literals.
-    SyntaxError: If the value string has a syntax error.
+  strings. Then the resulting AST is evaluated as a literal or container
+  of only containers and literals.  This allows for the YAML-like syntax
+  {a: b} to represent the dict {'a': 'b'}
   """
   root = ast.parse(value, mode='eval')
   if isinstance(root.body, ast.BinOp):  # pytype: disable=attribute-error
@@ -111,13 +111,19 @@ def _LiteralEval(value):
 
 
 def _Replacement(node):
-  """Returns a node to use in place of the supplied node in the AST.
+  """  Returns a node to use in place of the supplied node in the AST.
+
+  It takes a node of type Name, which could be a variable or a builtin
+  constant, and returns a node to be used in place of the supplied node.
+  If the node is a Name node, it returns the same node; otherwise, it
+  returns a String node with the same value as the Name node's id.
 
   Args:
-    node: A node of type Name. Could be a variable, or builtin constant.
+      node (ast.Name): A node of type Name representing a variable or builtin constant.
+
   Returns:
-    A node to use in place of the supplied Node. Either the same node, or a
-    String node whose value matches the Name node's id.
+      ast.Node: A node to use in place of the supplied Node. Either the same node or a
+      String node whose value matches the Name node's id.
   """
   value = node.id
   # These are the only builtin constants supported by literal_eval.

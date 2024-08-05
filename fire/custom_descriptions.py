@@ -44,20 +44,18 @@ STRING_DESC_PREFIX = 'The string '
 
 
 def NeedsCustomDescription(component):
-  """Whether the component should use a custom description and summary.
+  """  Whether the component should use a custom description and summary.
 
-  Components of primitive type, such as ints, floats, dicts, lists, and others
-  have messy builtin docstrings. These are inappropriate for display as
-  descriptions and summaries in a CLI. This function determines whether the
-  provided component has one of these docstrings.
-
-  Note that an object such as `int` has the same docstring as an int like `3`.
-  The docstring is OK for `int`, but is inappropriate as a docstring for `3`.
+  Components of primitive type, such as ints, floats, dicts, lists, and
+  others have messy builtin docstrings. These are inappropriate for
+  display as descriptions and summaries in a CLI. This function determines
+  whether the provided component has one of these docstrings.
 
   Args:
-    component: The component of interest.
+      component: The component of interest.
+
   Returns:
-    Whether the component should use a custom description and summary.
+      bool: Whether the component should use a custom description and summary.
   """
   type_ = type(component)
   if (type_ in six.string_types
@@ -72,20 +70,20 @@ def NeedsCustomDescription(component):
 
 
 def GetStringTypeSummary(obj, available_space, line_length):
-  """Returns a custom summary for string type objects.
+  """  Returns a custom summary for string type objects.
 
-  This function constructs a summary for string type objects by double quoting
-  the string value. The double quoted string value will be potentially truncated
-  with ellipsis depending on whether it has enough space available to show the
-  full string value.
+  This function constructs a summary for string type objects by double
+  quoting the string value. The double quoted string value will be
+  potentially truncated with ellipsis depending on whether it has enough
+  space available to show the full string value.
 
   Args:
-    obj: The object to generate summary for.
-    available_space: Number of character spaces available.
-    line_length: The full width of the terminal, default is 80.
+      obj: The object to generate summary for.
+      available_space: Number of character spaces available.
+      line_length: The full width of the terminal, default is 80.
 
   Returns:
-    A summary for the input object.
+      str: A summary for the input object.
   """
   if len(obj) + len(TWO_DOUBLE_QUOTES) <= available_space:
     content = obj
@@ -99,20 +97,20 @@ def GetStringTypeSummary(obj, available_space, line_length):
 
 
 def GetStringTypeDescription(obj, available_space, line_length):
-  """Returns the predefined description for string obj.
+  """  Returns the predefined description for string obj.
 
-  This function constructs a description for string type objects in the format
-  of 'The string "<string_value>"'. <string_value> could be potentially
-  truncated depending on whether it has enough space available to show the full
-  string value.
+  This function constructs a description for string type objects in the
+  format of 'The string "<string_value>"'. <string_value> could be
+  potentially truncated depending on whether it has enough space available
+  to show the full string value.
 
   Args:
-    obj: The object to generate description for.
-    available_space: Number of character spaces available.
-    line_length: The full width of the terminal, default if 80.
+      obj (str): The object to generate description for.
+      available_space (int): Number of character spaces available.
+      line_length (int): The full width of the terminal, default if 80.
 
   Returns:
-    A description for input object.
+      str: A description for input object.
   """
   additional_len_needed = len(STRING_DESC_PREFIX) + len(
       TWO_DOUBLE_QUOTES) + len(formatting.ELLIPSIS)
@@ -132,6 +130,26 @@ CUSTOM_DESC_SUM_FN_DICT = {
 
 
 def GetSummary(obj, available_space, line_length):
+  """Get the summary of an object based on its type using custom description
+  functions if available.
+
+  This function takes an object, available space, and line length as input
+  parameters. It checks if there is a custom description function
+  available for the type of the object. If a custom function is found, it
+  calls the function with the object, available space, and line length as
+  arguments and returns the result. If no custom function is found, it
+  returns None.
+
+  Args:
+      obj: The object for which the summary is to be generated.
+      available_space (int): The available space for the summary.
+      line_length (int): The maximum line length for the summary.
+
+  Returns:
+      str or None: The summary of the object based on its type or None if no
+          custom function is available.
+  """
+
   obj_type_name = type(obj).__name__
   if obj_type_name in CUSTOM_DESC_SUM_FN_DICT:
     return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[0](obj, available_space,
@@ -140,6 +158,23 @@ def GetSummary(obj, available_space, line_length):
 
 
 def GetDescription(obj, available_space, line_length):
+  """Get the description of an object based on its type.
+
+  This function takes an object, available space, and line length as input
+  parameters. It checks if the object type is present in the
+  CUSTOM_DESC_SUM_FN_DICT and calls the corresponding function to get the
+  description.
+
+  Args:
+      obj: The object for which description is to be retrieved.
+      available_space: The available space for the description.
+      line_length: The maximum length of each line in the description.
+
+  Returns:
+      str or None: The description of the object if found in the dictionary,
+          otherwise None.
+  """
+
   obj_type_name = type(obj).__name__
   if obj_type_name in CUSTOM_DESC_SUM_FN_DICT:
     return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[1](obj, available_space,

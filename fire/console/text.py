@@ -35,14 +35,34 @@ class TextAttributes(object):
 
   @property
   def format_str(self):
+    """Return the format string used for formatting.
+
+    Returns:
+        str: The format string used for formatting.
+    """
+
     return self._format_str
 
   @property
   def color(self):
+    """Return the color of the object.
+
+    Returns:
+        str: The color of the object.
+    """
+
     return self._color
 
   @property
   def attrs(self):
+    """Return the attributes of the object.
+
+    This function returns the attributes of the object.
+
+    Returns:
+        dict: A dictionary containing the attributes of the object.
+    """
+
     return self._attrs
 
 
@@ -62,16 +82,50 @@ class TypedText(object):
     self.text_type = text_type
 
   def __len__(self):
+    """Calculate the total length of all texts in the instance.
+
+    This method iterates through all texts in the instance and calculates
+    the total length by summing the length of each text.
+
+    Returns:
+        int: The total length of all texts combined.
+    """
+
     length = 0
     for text in self.texts:
       length += len(text)
     return length
 
   def __add__(self, other):
+    """Add two TypedText objects together.
+
+    Combines the current TypedText object with another TypedText object by
+    creating a new TypedText object containing the texts from both objects.
+
+    Args:
+        self (TypedText): The first TypedText object.
+        other (TypedText): The second TypedText object to be added.
+
+    Returns:
+        TypedText: A new TypedText object containing the texts from both input objects.
+    """
+
     texts = [self, other]
     return TypedText(texts)
 
   def __radd__(self, other):
+    """Return a new TypedText object by concatenating the current TypedText
+    object with another object in reverse order.
+
+    Args:
+        self (TypedText): The current TypedText object.
+        other (object): The object to be concatenated with the current TypedText object.
+
+    Returns:
+        TypedText: A new TypedText object created by concatenating the current TypedText
+            object with the other object in reverse order.
+    """
+
     texts = [other, self]
     return TypedText(texts)
 
@@ -80,7 +134,17 @@ class _TextTypes(enum.Enum):
   """Text types base class that defines base functionality."""
 
   def __call__(self, *args):
-    """Returns a TypedText object using this style."""
+    """    Returns a TypedText object using this style.
+
+    This function takes variable arguments and returns a TypedText object
+    with the provided arguments and the current style.
+
+    Args:
+        *args: Variable number of arguments.
+
+    Returns:
+        TypedText: An object of TypedText class.
+    """
     return TypedText(list(args), self)
 
 

@@ -118,20 +118,25 @@ class Pager(object):
       self._lines += self._attr.SplitLine(line, self._width)
 
   def _Write(self, s):
-    """Mockable helper that writes s to self._out."""
+    """    Mockable helper that writes the input string to the output stream.
+
+    Args:
+        s (str): The string to be written to the output stream.
+    """
     self._out.write(s)
 
   def _GetSearchCommand(self, c):
-    """Consumes a search command and returns the equivalent pager command.
+    """    Consumes a search command and returns the equivalent pager command.
 
-    The search pattern is an RE that is pre-compiled and cached for subsequent
-    /<newline>, ?<newline>, n, or N commands.
+    The function consumes a search command character and returns the
+    equivalent pager command character. It also pre-compiles and caches the
+    search pattern for subsequent search commands.
 
     Args:
-      c: The search command char.
+        c (str): The search command character.
 
     Returns:
-      The pager command char.
+        str: The pager command character.
     """
     self._Write(c)
     buf = ''
@@ -153,7 +158,11 @@ class Pager(object):
     return 'n'
 
   def _Help(self):
-    """Print command help and wait for any character to continue."""
+    """    Print command help and wait for any character to continue.
+
+    This function prints the command help text and waits for any character
+    input to continue.
+    """
     clear = self._height - (len(self.HELP_TEXT) -
                             len(self.HELP_TEXT.replace('\n', '')))
     if clear > 0:
@@ -163,7 +172,13 @@ class Pager(object):
     self._Write('\n')
 
   def Run(self):
-    """Run the pager."""
+    """    Run the pager.
+
+    This function runs the pager to display content in pages. If the content
+    is small enough to fit in one page, it is displayed without paging. If
+    the content requires paging, it displays one page at a time and allows
+    navigation through the pages using various commands.  No Args.
+    """
     # No paging if the contents are small enough.
     if len(self._lines) <= self._height:
       self._Write(self._contents)

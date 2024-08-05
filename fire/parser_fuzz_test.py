@@ -50,6 +50,17 @@ class ParserFuzzTest(testutils.BaseTestCase):
   @example(100 * '[' + '0')  # Note: Causes MemoryError.
   @example('\r\r\r\r1\r\r')
   def testDefaultParseValueFuzz(self, value):
+    """Test the DefaultParseValue method with fuzz testing.
+
+    This method tests the DefaultParseValue method with fuzz testing by
+    parsing the input value and comparing it with the expected result. It
+    handles various exceptions such as TypeError, MemoryError, and
+    UnicodeDecodeError.
+
+    Args:
+        value: The input value to be parsed.
+    """
+
     try:
       result = parser.DefaultParseValue(value)
     except TypeError:

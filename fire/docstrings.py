@@ -80,14 +80,43 @@ class Namespace(dict):
   """A dict with attribute (dot-notation) access enabled."""
 
   def __getattr__(self, key):
+    """Return the value associated with the given key. If the key does not
+    exist in the namespace,
+    a new Namespace object is created and associated with the key before
+    returning it.
+
+    Args:
+        key (str): The key to retrieve the value for.
+
+    Returns:
+        Namespace: The value associated with the key, or a new Namespace object if the key
+            does not exist.
+    """
+
     if key not in self:
       self[key] = Namespace()
     return self[key]
 
   def __setattr__(self, key, value):
+    """Set the value of an attribute in the object's dictionary.
+
+    This method allows setting the value of an attribute in the object's
+    dictionary directly.
+
+    Args:
+        key (str): The key to be set in the object's dictionary.
+        value: The value to be associated with the key.
+    """
+
     self[key] = value
 
   def __delattr__(self, key):
+    """Delete the attribute with the specified key from the object.
+
+    Args:
+        key (str): The key of the attribute to be deleted.
+    """
+
     if key in self:
       del self[key]
 
@@ -116,41 +145,35 @@ SECTION_TITLES = {
 
 
 def parse(docstring):
-  """Returns DocstringInfo about the given docstring.
+  """  Returns DocstringInfo about the given docstring.
 
-  This parser aims to parse Google, numpy, and rst formatted docstrings. These
-  are the three most common docstring styles at the time of this writing.
-
-  This parser aims to be permissive, working even when the docstring deviates
-  from the strict recommendations of these styles.
-
-  This parser does not aim to fully extract all structured information from a
-  docstring, since there are simply too many ways to structure information in a
-  docstring. Sometimes content will remain as unstructured text and simply gets
-  included in the description.
-
-  The Google docstring style guide is available at:
-  https://github.com/google/styleguide/blob/gh-pages/pyguide.md
-
-  The numpy docstring style guide is available at:
-  https://numpydoc.readthedocs.io/en/latest/format.html
-
-  Information about the rST docstring format is available at:
-  https://www.python.org/dev/peps/pep-0287/
-  The full set of directives such as param and type for rST docstrings are at:
-  http://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html
-
-  Note: This function does not claim to handle all docstrings well. A list of
-  limitations is available at the top of the file. It does aim to run without
-  crashing in O(n) time on all strings on length n. If you find a string that
-  causes this to crash or run unacceptably slowly, please consider submitting
-  a pull request.
+  This parser aims to parse Google, numpy, and rst formatted docstrings.
+  These are the three most common docstring styles at the time of this
+  writing.  This parser aims to be permissive, working even when the
+  docstring deviates from the strict recommendations of these styles.
+  This parser does not aim to fully extract all structured information
+  from a docstring, since there are simply too many ways to structure
+  information in a docstring. Sometimes content will remain as
+  unstructured text and simply gets included in the description.  The
+  Google docstring style guide is available at:
+  https://github.com/google/styleguide/blob/gh-pages/pyguide.md  The numpy
+  docstring style guide is available at:
+  https://numpydoc.readthedocs.io/en/latest/format.html  Information about
+  the rST docstring format is available at:
+  https://www.python.org/dev/peps/pep-0287/ The full set of directives
+  such as param and type for rST docstrings are at: http://www.sphinx-
+  doc.org/en/master/usage/restructuredtext/domains.html  Note: This
+  function does not claim to handle all docstrings well. A list of
+  limitations is available at the top of the file. It does aim to run
+  without crashing in O(n) time on all strings on length n. If you find a
+  string that causes this to crash or run unacceptably slowly, please
+  consider submitting a pull request.
 
   Args:
-    docstring: The docstring to parse.
+      docstring (str): The docstring to parse.
 
   Returns:
-    A DocstringInfo containing information about the docstring.
+      DocstringInfo: A DocstringInfo containing information about the docstring.
   """
   if docstring is None:
     return DocstringInfo()
@@ -209,12 +232,17 @@ def parse(docstring):
 
 
 def _strip_blank_lines(lines):
-  """Removes lines containing only blank characters before and after the text.
+  """  Removes lines containing only blank characters before and after the
+  text.
+
+  It takes a list of lines as input and removes any leading or trailing
+  blank lines.
 
   Args:
-    lines: A list of lines.
+      lines (list): A list of lines.
+
   Returns:
-    A list of lines without trailing or leading blank lines.
+      list: A list of lines without trailing or leading blank lines.
   """
   # Find the first non-blank line.
   start = 0
@@ -232,19 +260,31 @@ def _strip_blank_lines(lines):
 
 
 def _is_blank(line):
+  """Check if a given line is blank or contains only whitespace characters.
+
+  Args:
+      line (str): A string representing a line of text.
+
+  Returns:
+      bool: True if the line is blank or contains only whitespace characters, False
+          otherwise.
+  """
+
   return not line or line.isspace()
 
 
 def _join_lines(lines):
-  """Joins lines with the appropriate connective whitespace.
+  """  Joins lines with the appropriate connective whitespace.
 
-  This puts a single space between consecutive lines, unless there's a blank
-  line, in which case a full blank line is included.
+  This function takes a list of lines and joins them together with a
+  single space between consecutive lines, unless there is a blank line, in
+  which case a full blank line is included.
 
   Args:
-    lines: A list of lines to join.
+      lines (list): A list of lines to join.
+
   Returns:
-    A string, the lines joined together.
+      str: The lines joined together.
   """
   # TODO(dbieber): Add parameters for variations in whitespace handling.
   if not lines:
@@ -272,18 +312,20 @@ def _join_lines(lines):
 
 
 def _get_or_create_arg_by_name(state, name, is_kwarg=False):
-  """Gets or creates a new Arg.
+  """  Gets or creates a new Arg.
 
   These Arg objects (Namespaces) are turned into the ArgInfo namedtuples
-  returned by parse. Each Arg object is used to collect the name, type, and
-  description of a single argument to the docstring's function.
+  returned by parse. Each Arg object is used to collect the name, type,
+  and description of a single argument to the docstring's function.
 
   Args:
-    state: The state of the parser.
-    name: The name of the arg to create.
-    is_kwarg: A boolean representing whether the argument is a keyword arg.
+      state (object): The state of the parser.
+      name (str): The name of the arg to create.
+      is_kwarg (bool?): A boolean representing whether the argument is a keyword arg. Defaults
+          to False.
+
   Returns:
-    The new Arg.
+      object: The new Arg.
   """
   for arg in state.args + state.kwargs:
     if arg.name == name:
@@ -300,16 +342,18 @@ def _get_or_create_arg_by_name(state, name, is_kwarg=False):
 
 
 def _is_arg_name(name):
-  """Returns whether name is a valid arg name.
+  """  Returns whether name is a valid arg name.
 
-  This is used to prevent multiple words (plaintext) from being misinterpreted
-  as an argument name. Any line that doesn't match the pattern for a valid
-  argument is treated as not being an argument.
+  This function checks if the input name is a valid argument name by
+  ensuring it follows the pattern of a letter or underscore followed by
+  zero or more letters, numbers, or underscores. This is important to
+  prevent multiple words from being misinterpreted as an argument name.
 
   Args:
-    name: The name of the potential arg.
+      name (str): The name of the potential arg.
+
   Returns:
-    True if name looks like an arg name, False otherwise.
+      bool: True if name looks like an arg name, False otherwise.
   """
   name = name.strip()
   # arg_pattern is a letter or underscore followed by
@@ -320,16 +364,18 @@ def _is_arg_name(name):
 
 
 def _as_arg_name_and_type(text):
-  """Returns text as a name and type, if text looks like an arg name and type.
+  """  Returns text as a name and type, if text looks like an arg name and
+  type.
 
-  Example:
-    _as_arg_name_and_type("foo (int)") == "foo", "int"
+  This function takes a text input and checks if it resembles an argument
+  name and type. If the text matches the format 'name (type)', it extracts
+  and returns the name and type.
 
   Args:
-    text: The text, which may or may not be an arg name and type.
+      text (str): The text to be checked for arg name and type.
+
   Returns:
-    The arg name and type, if text looks like an arg name and type.
-    None otherwise.
+      tuple: A tuple containing the arg name and type if found, otherwise None.
   """
   tokens = text.split()
   if len(tokens) < 2:
@@ -343,16 +389,17 @@ def _as_arg_name_and_type(text):
 
 
 def _as_arg_names(names_str):
-  """Converts names_str to a list of arg names.
+  """  Converts names_str to a list of argument names.
 
-  Example:
-    _as_arg_names("a, b, c") == ["a", "b", "c"]
+  This function takes a string containing multiple space or comma
+  separated argument names and converts it into a list of argument names.
 
   Args:
-    names_str: A string with multiple space or comma separated arg names.
+      names_str (str): A string with multiple space or comma separated argument names.
+
   Returns:
-    A list of arg names, or None if names_str doesn't look like a list of arg
-    names.
+      list: A list of argument names, or None if names_str doesn't look like a list
+          of argument names.
   """
   names = re.split(',| ', names_str)
   names = [name.strip() for name in names if name.strip()]
@@ -365,18 +412,17 @@ def _as_arg_names(names_str):
 
 
 def _cast_to_known_type(name):
-  """Canonicalizes a string representing a type if possible.
+  """  Canonicalizes a string representing a type if possible.
 
-  # TODO(dbieber): Support additional canonicalization, such as string/str, and
-  # boolean/bool.
-
-  Example:
-    _cast_to_known_type("str.") == "str"
+  This function takes a string representing a type and removes any
+  trailing period to provide a canonicalized version of the type string.
+  It supports additional canonicalization in the future.
 
   Args:
-    name: A string representing a type, or None.
+      name (str): A string representing a type, or None.
+
   Returns:
-    A canonicalized version of the type string.
+      str: A canonicalized version of the type string.
   """
   if name is None:
     return None
@@ -384,7 +430,20 @@ def _cast_to_known_type(name):
 
 
 def _consume_google_args_line(line_info, state):
-  """Consume a single line from a Google args section."""
+  """  Consume a single line from a Google args section.
+
+  This function processes a single line from a Google-style args section.
+  It splits the line into the argument name and description, and updates
+  the state accordingly. If the line contains an argument name, it creates
+  or retrieves the argument object and updates its description. If the
+  line contains argument type information, it updates the argument's type
+  information. If neither of these conditions are met, it appends the line
+  to the current argument's description.
+
+  Args:
+      line_info (object): Information about the current line being processed.
+      state (object): The current state of the processing.
+  """
   split_line = line_info.remaining.split(':', 1)
   if len(split_line) > 1:
     first, second = split_line  # first is either the "arg" or "arg (type)"
@@ -409,14 +468,14 @@ def _consume_google_args_line(line_info, state):
 
 
 def _consume_line(line_info, state):
-  """Consumes one line of text, updating the state accordingly.
+  """  Consumes one line of text, updating the state accordingly.
 
-  When _consume_line is called, part of the line may already have been processed
-  for header information.
+  When _consume_line is called, part of the line may already have been
+  processed for header information.
 
   Args:
-    line_info: Information about the current and next line of the docstring.
-    state: The state of the docstring parser.
+      line_info (tuple): Information about the current and next line of the docstring.
+      state (State): The state of the docstring parser.
   """
   _update_section_state(line_info, state)
 
@@ -508,7 +567,22 @@ def _consume_line(line_info, state):
 
 
 def _create_line_info(line, next_line, previous_line):
-  """Returns information about the current line and surrounding lines."""
+  """  Returns information about the current line and surrounding lines.
+
+  It creates a Namespace object to store information about the current
+  line and its surrounding lines. The function extracts details such as
+  the stripped version of the line, remaining raw line, remaining stripped
+  line, indentation of the current line, next line, and previous line.
+
+  Args:
+      line (str): The current line of text.
+      next_line (str): The next line of text.
+      previous_line (str): The previous line of text.
+
+  Returns:
+      Namespace: An object containing information about the current line and surrounding
+          lines.
+  """
   line_info = Namespace()  # TODO(dbieber): Switch to an explicit class.
   line_info.line = line
   line_info.stripped = line.strip()
@@ -531,13 +605,13 @@ def _create_line_info(line, next_line, previous_line):
 
 
 def _update_section_state(line_info, state):
-  """Uses line_info to determine the current section of the docstring.
+  """  Uses line_info to determine the current section of the docstring.
 
   Updates state and line_info.remaining.
 
   Args:
-    line_info: Information about the current line.
-    state: The state of the parser.
+      line_info (object): Information about the current line.
+      state (object): The state of the parser.
   """
   section_updated = False
 
@@ -575,25 +649,18 @@ def _update_section_state(line_info, state):
 
 
 def _google_section_permitted(line_info, state):
-  """Returns whether a new google section is permitted to start here.
+  """  Returns whether a new google section is permitted to start here.
 
-  Q: Why might a new Google section not be allowed?
-  A: If we're in the middle of a Google "Args" section, then lines that start
-  "param:" will usually be a new arg, rather than a new section.
-  We use whitespace to determine when the Args section has actually ended.
-
-  A Google section ends when either:
-  - A new google section begins at either
-    - indentation less than indentation of line 1 of the previous section
-    - or <= indentation of the previous section
-  - Or the docstring terminates.
+  This function determines whether a new Google section is allowed to
+  start at the current line. It checks if a new section can begin based on
+  the indentation and the state of the parser.
 
   Args:
-    line_info: Information about the current line.
-    state: The state of the parser.
+      line_info (object): Information about the current line.
+      state (object): The state of the parser.
+
   Returns:
-    True or False, indicating whether a new Google section is permitted at the
-    current line.
+      bool: True if a new Google section is permitted, False otherwise.
   """
   if state.section.indentation is None:  # We're not in a section yet.
     return True
@@ -602,14 +669,18 @@ def _google_section_permitted(line_info, state):
 
 
 def _matches_section_title(title, section_title):
-  """Returns whether title is a match for a specific section_title.
+  """  Returns whether the given title matches a specific section title.
 
-  Example:
-    _matches_section_title('Yields', 'yield') == True
+  This function checks if the provided title matches a specific known
+  section title. It converts both titles to lowercase for case-insensitive
+  comparison and also handles plurals or minor typos.
 
   Args:
-    title: The title to check for matching.
-    section_title: A specific known section title to check against.
+      title (str): The title to be checked for matching.
+      section_title (str): A specific known section title to be compared against.
+
+  Returns:
+      bool: True if the titles match, False otherwise.
   """
   title = title.lower()
   section_title = section_title.lower()
@@ -617,18 +688,17 @@ def _matches_section_title(title, section_title):
 
 
 def _matches_section(title, section):
-  """Returns whether title is a match any known title for a specific section.
+  """  Returns whether title is a match any known title for a specific section.
 
-  Example:
-    _matches_section_title('Yields', Sections.YIELDS) == True
-    _matches_section_title('param', Sections.Args) == True
+  This function checks if the given title matches any known title for a
+  specific section.
 
   Args:
-    title: The title to check for matching.
-    section: A specific section to check all possible titles for.
+      title (str): The title to check for matching.
+      section (Sections): A specific section to check all possible titles for.
+
   Returns:
-    True or False, indicating whether title is a match for the specified
-    section.
+      bool: True if the title is a match for the specified section, False otherwise.
   """
   for section_title in SECTION_TITLES[section]:
     if _matches_section_title(title, section_title):
@@ -637,12 +707,16 @@ def _matches_section(title, section):
 
 
 def _section_from_possible_title(possible_title):
-  """Returns a section matched by the possible title, or None if none match.
+  """  Returns a section matched by the possible title, or None if none match.
+
+  It iterates through the possible section titles and checks if the
+  possible title matches any of them.
 
   Args:
-    possible_title: A string that may be the title of a new section.
+      possible_title (str): A string that may be the title of a new section.
+
   Returns:
-    A Section type if one matches, or None if no section type matches.
+      Section: A Section type if one matches, or None if no section type matches.
   """
   for section in SECTION_TITLES:
     if _matches_section(possible_title, section):
@@ -651,18 +725,18 @@ def _section_from_possible_title(possible_title):
 
 
 def _google_section(line_info):
-  """Checks whether the current line is the start of a new Google-style section.
+  """  Checks whether the current line is the start of a new Google-style
+  section.
 
-  This docstring is a Google-style docstring. Google-style sections look like
-  this:
-
-    Section Name:
-      section body goes here
+  This function checks if the current line marks the start of a new
+  Google-style section. Google-style sections are structured as follows:
+  Section Name:     section body goes here
 
   Args:
-    line_info: Information about the current line.
+      line_info (object): Information about the current line.
+
   Returns:
-    A Section type if one matches, or None if no section type matches.
+      Section: A Section type if one matches, or None if no section type matches.
   """
   colon_index = line_info.remaining.find(':')
   possible_title = line_info.remaining[:colon_index]
@@ -670,22 +744,34 @@ def _google_section(line_info):
 
 
 def _get_after_google_header(line_info):
-  """Gets the remainder of the line, after a Google header."""
+  """  Gets the remainder of the line, after a Google header.
+
+  This function extracts and returns the part of the line that comes after
+  a Google header.
+
+  Args:
+      line_info (object): An object containing information about the line.
+
+  Returns:
+      str: The part of the line after the Google header.
+  """
   colon_index = line_info.remaining.find(':')
   return line_info.remaining[colon_index + 1:]
 
 
 def _get_directive(line_info):
-  """Gets a directive from the start of the line.
+  """  Gets a directive from the start of the line.
 
-  If the line is ":param str foo: Description of foo", then
-  _get_directive(line_info) returns "param str foo".
+  This function extracts a directive from the beginning of the line. It
+  checks if the line starts with a colon and returns the directive
+  content.
 
   Args:
-    line_info: Information about the current line.
+      line_info (str): Information about the current line.
+
   Returns:
-    The contents of a directive, or None if the line doesn't start with a
-    directive.
+      str: The contents of a directive, or None if the line doesn't start with a
+          directive.
   """
   if line_info.stripped.startswith(':'):
     return line_info.stripped.split(':', 2)[1]
@@ -694,7 +780,18 @@ def _get_directive(line_info):
 
 
 def _get_after_directive(line_info):
-  """Gets the remainder of the line, after a directive."""
+  """  Gets the remainder of the line, after a directive.
+
+  This function takes a LineInfo object as input and extracts the part of
+  the line that comes after a directive. It splits the line based on ':'
+  and returns the remaining part after the directive.
+
+  Args:
+      line_info (LineInfo): An object containing information about the line.
+
+  Returns:
+      str: The part of the line that comes after the directive.
+  """
   sections = line_info.stripped.split(':', 2)
   if len(sections) > 2:
     return sections[-1]
@@ -703,15 +800,17 @@ def _get_after_directive(line_info):
 
 
 def _rst_section(line_info):
-  """Checks whether the current line is the start of a new RST-style section.
+  """  Checks whether the current line is the start of a new RST-style section.
 
-  RST uses directives to specify information. An RST directive, which we refer
-  to as a section here, are surrounded with colons. For example, :param name:.
+  RST uses directives to specify information. An RST directive, which we
+  refer to as a section here, are surrounded with colons. For example,
+  :param name:.
 
   Args:
-    line_info: Information about the current line.
+      line_info (str): Information about the current line.
+
   Returns:
-    A Section type if one matches, or None if no section type matches.
+      Section: A Section type if one matches, or None if no section type matches.
   """
   directive = _get_directive(line_info)
   if directive:
@@ -722,23 +821,30 @@ def _rst_section(line_info):
 
 
 def _line_is_hyphens(line):
-  """Returns whether the line is entirely hyphens (and not blank)."""
+  """  Returns whether the line is entirely hyphens (and not blank).
+
+  Args:
+      line (str): The input line to check.
+
+  Returns:
+      bool: True if the line consists only of hyphens and is not blank, False
+          otherwise.
+  """
   return line and not line.strip('-')
 
 
 def _numpy_section(line_info):
-  """Checks whether the current line is the start of a new numpy-style section.
+  """  Checks whether the current line is the start of a new numpy-style
+  section.
 
-  Numpy style sections are followed by a full line of hyphens, for example:
-
-    Section Name
-    ------------
-    Section body goes here.
+  Numpy style sections are followed by a full line of hyphens, for
+  example:  Section Name ------------ Section body goes here.
 
   Args:
-    line_info: Information about the current line.
+      line_info (object): Information about the current line.
+
   Returns:
-    A Section type if one matches, or None if no section type matches.
+      object: A Section type if one matches, or None if no section type matches.
   """
   next_line_is_hyphens = _line_is_hyphens(line_info.next.stripped)
   if next_line_is_hyphens:
@@ -749,18 +855,19 @@ def _numpy_section(line_info):
 
 
 def _line_is_numpy_parameter_type(line_info):
-  """Returns whether the line contains a numpy style parameter type definition.
+  """  Returns whether the line contains a numpy style parameter type
+  definition.
 
-  We look for a line of the form:
-  x : type
-
-  And we have to exclude false positives on argument descriptions containing a
-  colon by checking the indentation of the line above.
+  This function checks if the line contains a numpy style parameter type
+  definition. It looks for a line of the form: x : type It excludes false
+  positives on argument descriptions containing a colon by checking the
+  indentation of the line above.
 
   Args:
-    line_info: Information about the current line.
+      line_info (object): Information about the current line.
+
   Returns:
-    True if the line is a numpy parameter type definition, False otherwise.
+      bool: True if the line is a numpy parameter type definition, False otherwise.
   """
   line_stripped = line_info.remaining.strip()
   if ':' in line_stripped:

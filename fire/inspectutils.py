@@ -52,23 +52,22 @@ class FullArgSpec(object):
 
 
 def _GetArgSpecInfo(fn):
-  """Gives information pertaining to computing the ArgSpec of fn.
+  """  Gives information pertaining to computing the ArgSpec of fn.
 
   Determines if the first arg is supplied automatically when fn is called.
-  This arg will be supplied automatically if fn is a bound method or a class
-  with an __init__ method.
-
-  Also returns the function who's ArgSpec should be used for determining the
-  calling parameters for fn. This may be different from fn itself if fn is a
-  class with an __init__ method.
+  This arg will be supplied automatically if fn is a bound method or a
+  class with an __init__ method.  Also returns the function who's ArgSpec
+  should be used for determining the calling parameters for fn. This may
+  be different from fn itself if fn is a class with an __init__ method.
 
   Args:
-    fn: The function or class of interest.
+      fn: The function or class of interest.
+
   Returns:
-    A tuple with the following two items:
-      fn: The function to use for determining the arg spec of this function.
-      skip_arg: Whether the first argument will be supplied automatically, and
-        hence should be skipped when supplying args from a Fire command.
+      A tuple with the following two items:
+          fn: The function to use for determining the arg spec of this function.
+          skip_arg: Whether the first argument will be supplied automatically, and
+          hence should be skipped when supplying args from a Fire command.
   """
   skip_arg = False
   if inspect.isclass(fn):
@@ -92,7 +91,19 @@ def _GetArgSpecInfo(fn):
 
 
 def Py2GetArgSpec(fn):
-  """A wrapper around getargspec that tries both fn and fn.__call__."""
+  """  A wrapper around getargspec that tries both fn and fn.__call__.
+
+  This function is a wrapper around the getargspec function that attempts
+  to retrieve the arguments of the input function. It first tries to get
+  the arguments of the input function 'fn', and if that fails, it tries to
+  get the arguments of 'fn.__call__'.
+
+  Args:
+      fn (function): The input function for which arguments need to be retrieved.
+
+  Returns:
+      tuple: A tuple containing four elements - (args, varargs, varkw, defaults).
+  """
   try:
     return inspect.getargspec(fn)  # pylint: disable=deprecated-method,no-member
   except TypeError:
@@ -102,18 +113,11 @@ def Py2GetArgSpec(fn):
 
 
 def Py3GetFullArgSpec(fn):
-  """A alternative to the builtin getfullargspec.
+  """  A alternative to the builtin getfullargspec.
 
-  The builtin inspect.getfullargspec uses:
-  `skip_bound_args=False, follow_wrapped_chains=False`
-  in order to be backwards compatible.
-
-  This function instead skips bound args (self) and follows wrapped chains.
-
-  Args:
-    fn: The function or class of interest.
-  Returns:
-    An inspect.FullArgSpec namedtuple with the full arg spec of the function.
+  The function provides an alternative to the built-in
+  inspect.getfullargspec by skipping bound args (self) and following
+  wrapped chains.
   """
   # pylint: disable=no-member
   # pytype: disable=module-attr
@@ -177,7 +181,17 @@ def Py3GetFullArgSpec(fn):
 
 
 def GetFullArgSpec(fn):
-  """Returns a FullArgSpec describing the given callable."""
+  """  Returns a FullArgSpec describing the given callable.
+
+  This function takes a callable as input and returns a FullArgSpec object
+  that describes the callable.
+
+  Args:
+      fn (callable): The callable for which FullArgSpec needs to be generated.
+
+  Returns:
+      FullArgSpec: An object containing information about the arguments of the callable.
+  """
   original_fn = fn
   fn, skip_arg = _GetArgSpecInfo(fn)
 
@@ -229,14 +243,20 @@ def GetFullArgSpec(fn):
 
 
 def GetFileAndLine(component):
-  """Returns the filename and line number of component.
+  """  Returns the filename and line number of the given component.
 
   Args:
-    component: A component to find the source information for, usually a class
-        or routine.
+      component: A component to find the source information for, usually a class or
+          routine.
+
   Returns:
-    filename: The name of the file where component is defined.
-    lineno: The line number where component is defined.
+      tuple: A tuple containing the filename and line number of the component.
+          filename (str): The name of the file where the component is defined.
+          lineno (int): The line number where the component is defined.
+          
+          If the component is a built-in function, returns (None, None).
+          If unable to determine the source file or line number, returns (None,
+          None).
   """
   if inspect.isbuiltin(component):
     return None, None
@@ -256,23 +276,22 @@ def GetFileAndLine(component):
 
 
 def Info(component):
-  """Returns a dict with information about the given component.
+  """  Returns a dict with information about the given component.
 
-  The dict will have at least some of the following fields.
-    type_name: The type of `component`.
-    string_form: A string representation of `component`.
-    file: The file in which `component` is defined.
-    line: The line number at which `component` is defined.
-    docstring: The docstring of `component`.
-    init_docstring: The init docstring of `component`.
-    class_docstring: The class docstring of `component`.
-    call_docstring: The call docstring of `component`.
-    length: The length of `component`.
+  The dict will have at least some of the following fields:     -
+  type_name: The type of `component`.     - string_form: A string
+  representation of `component`.     - file: The file in which `component`
+  is defined.     - line: The line number at which `component` is defined.
+  - docstring: The docstring of `component`.     - init_docstring: The
+  init docstring of `component`.     - class_docstring: The class
+  docstring of `component`.     - call_docstring: The call docstring of
+  `component`.     - length: The length of `component`.
 
   Args:
-    component: The component to analyze.
+      component: The component to analyze.
+
   Returns:
-    A dict with information about the component.
+      dict: A dict with information about the component.
   """
   try:
     from IPython.core import oinspect  # pylint: disable=import-outside-toplevel,g-import-not-at-top
@@ -298,17 +317,26 @@ def Info(component):
 
 
 def _InfoBackup(component):
-  """Returns a dict with information about the given component.
+  """  Returns a dictionary with information about the given component.
 
-  This function is to be called only in the case that IPython's
-  oinspect module is not available. The info dict it produces may
-  contain less information that contained in the info dict produced
-  by oinspect.
+  This function is intended to be used only when IPython's oinspect module
+  is not available. The information dictionary it generates may contain
+  less detailed information compared to the info dictionary produced by
+  oinspect.
 
   Args:
-    component: The component to analyze.
+      component: The component to analyze.
+
   Returns:
-    A dict with information about the component.
+      dict: A dictionary containing information about the component. The dictionary
+          includes the following keys:
+          - 'type_name': The name of the type of the component.
+          - 'string_form': The string representation of the component.
+          - 'file': The filename where the component is defined.
+          - 'line': The line number where the component is defined.
+          - 'docstring': The docstring of the component.
+          - 'length': The length of the component as a string. This key may not be
+          present if the length cannot be determined.
   """
   info = {}
 
@@ -329,19 +357,20 @@ def _InfoBackup(component):
 
 
 def IsNamedTuple(component):
-  """Return true if the component is a namedtuple.
+  """  Return true if the component is a namedtuple.
 
-  Unfortunately, Python offers no native way to check for a namedtuple type.
-  Instead, we need to use a simple hack which should suffice for our case.
-  namedtuples are internally implemented as tuples, therefore we need to:
-    1. Check if the component is an instance of tuple.
-    2. Check if the component has a _fields attribute which regular tuples do
-       not have.
+  Unfortunately, Python offers no native way to check for a namedtuple
+  type. Instead, we need to use a simple hack which should suffice for our
+  case. namedtuples are internally implemented as tuples, therefore we
+  need to:   1. Check if the component is an instance of tuple.   2. Check
+  if the component has a _fields attribute which regular tuples do
+  not have.
 
   Args:
-    component: The component to analyze.
+      component: The component to analyze.
+
   Returns:
-    True if the component is a namedtuple or False otherwise.
+      bool: True if the component is a namedtuple or False otherwise.
   """
   if not isinstance(component, tuple):
     return False
@@ -351,7 +380,16 @@ def IsNamedTuple(component):
 
 
 def GetClassAttrsDict(component):
-  """Gets the attributes of the component class, as a dict with name keys."""
+  """  Gets the attributes of the component class, as a dictionary with
+  attribute names as keys.
+
+  Args:
+      component (class): The component class to retrieve attributes from.
+
+  Returns:
+      dict: A dictionary containing the attributes of the component class with
+          attribute names as keys.
+  """
   if not inspect.isclass(component):
     return None
   class_attrs_list = inspect.classify_class_attrs(component)
@@ -362,6 +400,19 @@ def GetClassAttrsDict(component):
 
 
 def IsCoroutineFunction(fn):
+  """Check if the given function is a coroutine function.
+
+  This function checks if the input function is a coroutine function by
+  utilizing the asyncio.iscoroutinefunction() method. It returns True if
+  the function is a coroutine function, otherwise returns False.
+
+  Args:
+      fn (function): The function to be checked.
+
+  Returns:
+      bool: True if the input function is a coroutine function, False otherwise.
+  """
+
   try:
     return six.PY34 and asyncio.iscoroutinefunction(fn)
   except:  # pylint: disable=bare-except

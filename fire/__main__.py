@@ -39,17 +39,10 @@ or with a file path:
 
 
 def import_from_file_path(path):
-  """Performs a module import given the filename.
+  """  Performs a module import given the filename.
 
-  Args:
-    path (str): the path to the file to be imported.
-
-  Raises:
-    IOError: if the given file does not exist or importlib fails to load it.
-
-  Returns:
-    Tuple[ModuleType, str]: returns the imported module and the module name,
-      usually extracted from the path itself.
+  This function imports a module from the specified file path. It checks
+  if the file exists, then loads the module based on the Python version.
   """
 
   if not os.path.exists(path):
@@ -83,27 +76,25 @@ def import_from_file_path(path):
 
 
 def import_from_module_name(module_name):
-  """Imports a module and returns it and its name."""
+  """  Imports a module using the provided module name and returns the module
+  object along with its name.
+
+  Args:
+      module_name (str): The name of the module to be imported.
+
+  Returns:
+      tuple: A tuple containing the imported module object and its name.
+  """
   module = importlib.import_module(module_name)
   return module, module_name
 
 
 def import_module(module_or_filename):
-  """Imports a given module or filename.
+  """  Imports a given module or filename.
 
-  If the module_or_filename exists in the file system and ends with .py, we
-  attempt to import it. If that import fails, try to import it as a module.
-
-  Args:
-    module_or_filename (str): string name of path or module.
-
-  Raises:
-    ValueError: if the given file is invalid.
-    IOError: if the file or module can not be found or imported.
-
-  Returns:
-    Tuple[ModuleType, str]: returns the imported module and the module name,
-      usually extracted from the path itself.
+  If the module_or_filename exists in the file system and ends with .py,
+  we attempt to import it. If that import fails, try to import it as a
+  module.
   """
 
   if os.path.exists(module_or_filename):
@@ -123,7 +114,17 @@ def import_module(module_or_filename):
 
 
 def main(args):
-  """Entrypoint for fire when invoked as a module with python -m fire."""
+  """  Entrypoint for fire when invoked as a module with python -m fire.
+
+  This function serves as the entry point for the Fire module when it is
+  invoked as a module using 'python -m fire'. It checks the length of the
+  input arguments and exits if there are less than 2 arguments. It then
+  imports the specified module and its name, and uses Fire to execute the
+  module with the provided command.
+
+  Args:
+      args (list): A list of command-line arguments.
+  """
 
   if len(args) < 2:
     print(cli_string)
