@@ -29,6 +29,12 @@ class DocstringsFuzzTest(testutils.BaseTestCase):
   @given(st.text(min_size=1))
   @example('This is a one-line docstring.')
   def test_fuzz_parse(self, value):
+    """Test the parse function in the docstrings module.
+
+    Args:
+        value: The value to be parsed.
+    """
+
     docstrings.parse(value)
 
 

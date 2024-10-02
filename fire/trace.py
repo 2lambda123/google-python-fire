@@ -61,18 +61,24 @@ class FireTrace(object):
     self.show_trace = show_trace
 
   def GetResult(self):
-    """Returns the component from the last element of the trace."""
+    """    Returns the component from the last element of the trace.
+
+    Returns:
+        Any: The component from the last element of the trace.
+    """
     # pytype: disable=attribute-error
     return self.GetLastHealthyElement().component
     # pytype: enable=attribute-error
 
   def GetLastHealthyElement(self):
-    """Returns the last element of the trace that is not an error.
+    """    Returns the last element of the trace that is not an error.
 
-    This element will contain the final component indicated by the trace.
+    This method iterates through the elements in reverse order and returns
+    the first element that does not have an error.
 
     Returns:
-      The last element of the trace that is not an error.
+        Element: The last element of the trace that is not an error, or None if all
+            elements have errors.
     """
     for element in reversed(self.elements):
       if not element.HasError():
@@ -80,10 +86,28 @@ class FireTrace(object):
     return None
 
   def HasError(self):
-    """Returns whether the Fire execution encountered a Fire usage error."""
+    """    Returns whether the Fire execution encountered a Fire usage error.
+
+    Returns:
+        bool: True if Fire execution encountered a Fire usage error, False otherwise.
+    """
     return self.elements[-1].HasError()
 
   def AddAccessedProperty(self, component, target, args, filename, lineno):
+    """Add an accessed property to the FireTrace elements list.
+
+    This function creates a FireTraceElement object with the given
+    component, target, args, filename, and lineno, and appends it to the
+    elements list.
+
+    Args:
+        component (str): The component name.
+        target (str): The target property being accessed.
+        args (list): A list of arguments passed to the property.
+        filename (str): The name of the file where the property is accessed.
+        lineno (int): The line number in the file where the property is accessed.
+    """
+
     element = FireTraceElement(
         component=component,
         action=ACCESSED_PROPERTY,
@@ -96,18 +120,18 @@ class FireTrace(object):
 
   def AddCalledComponent(self, component, target, args, filename, lineno,
                          capacity, action=CALLED_CALLABLE):
-    """Adds an element to the trace indicating that a component was called.
+    """    Adds an element to the trace indicating that a component was called.
 
     Also applies to instantiating a class.
 
     Args:
-      component: The result of calling the callable.
-      target: The name of the callable.
-      args: The args consumed in order to call this callable.
-      filename: The file in which the callable is defined, or None if N/A.
-      lineno: The line number on which the callable is defined, or None if N/A.
-      capacity: (bool) Whether the callable could have accepted additional args.
-      action: The value to include as the action in the FireTraceElement.
+        component: The result of calling the callable.
+        target: The name of the callable.
+        args: The args consumed in order to call this callable.
+        filename: The file in which the callable is defined, or None if N/A.
+        lineno: The line number on which the callable is defined, or None if N/A.
+        capacity: (bool) Whether the callable could have accepted additional args.
+        action: The value to include as the action in the FireTraceElement.
     """
     element = FireTraceElement(
         component=component,
@@ -121,6 +145,16 @@ class FireTrace(object):
     self.elements.append(element)
 
   def AddCompletionScript(self, script):
+    """Add a completion script to the FireTrace elements list.
+
+    This function creates a FireTraceElement with the given script as the
+    component and COMPLETION_SCRIPT as the action, then appends it to the
+    elements list.
+
+    Args:
+        script (str): The completion script to be added.
+    """
+
     element = FireTraceElement(
         component=script,
         action=COMPLETION_SCRIPT,
@@ -128,51 +162,76 @@ class FireTrace(object):
     self.elements.append(element)
 
   def AddInteractiveMode(self):
+    """Add an interactive mode FireTraceElement to the elements list.
+
+    This function creates a FireTraceElement with action set to
+    INTERACTIVE_MODE and appends it to the elements list.
+
+    Args:
+        self: The FireTrace object.
+    """
+
     element = FireTraceElement(action=INTERACTIVE_MODE)
     self.elements.append(element)
 
   def AddError(self, error, args):
+    """Add an error to the FireTrace elements list.
+
+    This function creates a FireTraceElement object with the provided error
+    and args, and appends it to the elements list.
+
+    Args:
+        error (str): The error message to be added.
+        args (list): A list of arguments associated with the error.
+    """
+
     element = FireTraceElement(error=error, args=args)
     self.elements.append(element)
 
   def AddSeparator(self):
-    """Marks that the most recent element of the trace used  a separator.
+    """    Marks that the most recent element of the trace used a separator.
 
-    A separator is an argument you can pass to a Fire CLI to separate args left
-    of the separator from args right of the separator.
-
-    Here's an example to demonstrate the separator. Let's say you have a
-    function that takes a variable number of args, and you want to call that
-    function, and then upper case the result. Here's how to do it:
-
-    # in Python
-    def display(arg1, arg2='!'):
-      return arg1 + arg2
-
-    # from Bash (the default separator is the hyphen -)
-    display hello   # hello!
-    display hello upper # helloupper
-    display hello - upper # HELLO!
-
-    Note how the separator caused the display function to be called with the
-    default value for arg2.
+    A separator is an argument you can pass to a Fire CLI to separate args
+    left of the separator from args right of the separator.  Here's an
+    example to demonstrate the separator. Let's say you have a function that
+    takes a variable number of args, and you want to call that function, and
+    then upper case the result. Here's how to do it:  # in Python def
+    display(arg1, arg2='!'):   return arg1 + arg2  # from Bash (the default
+    separator is the hyphen -) display hello   # hello! display hello upper
+    # helloupper display hello - upper # HELLO!  Note how the separator
+    caused the display function to be called with the default value for
+    arg2.
     """
     self.elements[-1].AddSeparator()
 
   def _Quote(self, arg):
+    """Return a shell-escaped version of the input argument.
+
+    This function takes an argument and checks if it starts with '--' and
+    contains '='. If it does, it splits the argument into prefix and value,
+    then quotes them separately before returning. If the argument does not
+    meet the condition, it simply quotes the argument.
+
+    Args:
+        arg (str): The input argument to be shell-escaped.
+
+    Returns:
+        str: The shell-escaped version of the input argument.
+    """
+
     if arg.startswith('--') and '=' in arg:
       prefix, value = arg.split('=', 1)
       return shlex.quote(prefix) + '=' + shlex.quote(value)
     return shlex.quote(arg)
 
   def GetCommand(self, include_separators=True):
-    """Returns the command representing the trace up to this point.
+    """    Returns the command representing the trace up to this point.
 
     Args:
-      include_separators: Whether or not to include separators in the command.
+        include_separators (bool): Whether or not to include separators in the command.
 
     Returns:
-      A string representing a Fire CLI command that would produce this trace.
+        str: A string representing a Fire CLI command that would produce this trace.
     """
     args = []
     if self.name:
@@ -192,24 +251,36 @@ class FireTrace(object):
     return ' '.join(self._Quote(arg) for arg in args)
 
   def NeedsSeparator(self):
-    """Returns whether a separator should be added to the command.
+    """    Returns whether a separator should be added to the command.
 
-    If the command is a function call, then adding an additional argument to the
-    command sometimes would add an extra arg to the function call, and sometimes
-    would add an arg acting on the result of the function call.
-
+    If the command is a function call, then adding an additional argument to
+    the command sometimes would add an extra arg to the function call, and
+    sometimes would add an arg acting on the result of the function call.
     This function tells us whether we should add a separator to the command
-    before adding additional arguments in order to make sure the arg is applied
-    to the result of the function call, and not the function call itself.
+    before adding additional arguments in order to make sure the arg is
+    applied to the result of the function call, and not the function call
+    itself.
 
     Returns:
-      Whether a separator should be added to the command if order to keep the
-      component referred to by the command the same when adding additional args.
+        bool: Whether a separator should be added to the command if order to keep the
+        component referred to by the command the same when adding additional
+            args.
     """
     element = self.GetLastHealthyElement()
     return element.HasCapacity() and not element.HasSeparator()
 
   def __str__(self):
+    """Return a string representation of the object by formatting each element
+    with an index.
+
+    This method iterates over the elements of the object and creates a
+    formatted string for each element with its corresponding index. These
+    formatted strings are then joined together with newline characters.
+
+    Returns:
+        str: A string representation of the object with indexed elements.
+    """
+
     lines = []
     for index, element in enumerate(self.elements):
       line = '{index}. {trace_string}'.format(
@@ -220,18 +291,18 @@ class FireTrace(object):
     return '\n'.join(lines)
 
   def NeedsSeparatingHyphenHyphen(self, flag='help'):
-    """Returns whether a the trace need '--' before '--help'.
+    """    Returns whether a the trace need '--' before '--help'.
 
-    '--' is needed when the component takes keyword arguments, when the value of
-    flag matches one of the argument of the component, or the component takes in
-    keyword-only arguments(e.g. argument with default value).
+    '--' is needed when the component takes keyword arguments, when the
+    value of flag matches one of the argument of the component, or the
+    component takes in keyword-only arguments(e.g. argument with default
+    value).
 
     Args:
-      flag: the flag available for the trace
+        flag (str): The flag available for the trace.
 
     Returns:
-      True for needed '--', False otherwise.
-
+        bool: True if '--' is needed, False otherwise.
     """
     element = self.GetLastHealthyElement()
     component = element.component
@@ -280,21 +351,67 @@ class FireTraceElement(object):
     self._capacity = capacity
 
   def HasError(self):
+    """Check if there is an error associated with the object.
+
+    Returns:
+        bool: True if there is an error, False otherwise.
+    """
+
     return self._error is not None
 
   def HasCapacity(self):
+    """Check if the object has capacity.
+
+    This method returns the capacity of the object.
+
+    Returns:
+        bool: The capacity of the object.
+    """
+
     return self._capacity
 
   def HasSeparator(self):
+    """Check if the object has a separator attribute.
+
+    Returns:
+        bool: True if the object has a separator attribute, False otherwise.
+    """
+
     return self._separator
 
   def AddSeparator(self):
+    """Set the separator flag to True.
+
+    This function sets the separator flag to True, indicating that a
+    separator should be added when printing.
+    """
+
     self._separator = True
 
   def ErrorAsStr(self):
+    """Convert the error arguments to a string and return.
+
+    This function takes the error arguments stored in self._error, converts
+    each argument to a string, and joins them with a space in between before
+    returning the resulting string.
+
+    Returns:
+        str: A string representation of the error arguments.
+    """
+
     return ' '.join(str(arg) for arg in self._error.args)
 
   def __str__(self):
+    """Return a formatted string representation of the object.
+
+    If there is an error, it returns the error message as a string.
+    Otherwise, it formats the action, target, filename, and lineno into a
+    string.
+
+    Returns:
+        str: Formatted string representation of the object.
+    """
+
     if self.HasError():
       return self.ErrorAsStr()
     else:
